@@ -48,7 +48,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tutorbridge.R
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.tutorbridge.model.UserModel
 import com.example.tutorbridge.view.ui.theme.TutorBridgeTheme
+import com.example.tutorbridge.viewmodel.UserViewModel
+
 
 class SignUpActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,8 +68,11 @@ class SignUpActivity : ComponentActivity() {
 
 @Composable
 fun SignUp() {
+
+    val userViewModel: UserViewModel = viewModel()
     val context = LocalContext.current
 
+    // State Variables
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -131,10 +138,7 @@ fun SignUp() {
                 Spacer(modifier = Modifier.height(10.dp))
 
                 // FULL NAME FIELD
-                Text(
-                    text = "Full Name",
-                    fontWeight = FontWeight.SemiBold
-                )
+                Text(text = "Full Name", fontWeight = FontWeight.SemiBold)
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = fullName,
@@ -153,10 +157,7 @@ fun SignUp() {
                 Spacer(modifier = Modifier.height(15.dp))
 
                 // EMAIL FIELD
-                Text(
-                    text = "Email Address",
-                    fontWeight = FontWeight.SemiBold
-                )
+                Text(text = "Email Address", fontWeight = FontWeight.SemiBold)
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = email,
@@ -172,13 +173,11 @@ fun SignUp() {
                     )
                 )
 
+
                 Spacer(modifier = Modifier.height(15.dp))
 
                 // PASSWORD FIELD
-                Text(
-                    text = "Password",
-                    fontWeight = FontWeight.SemiBold
-                )
+                Text(text = "Password", fontWeight = FontWeight.SemiBold)
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = password,
@@ -208,10 +207,7 @@ fun SignUp() {
                 Spacer(modifier = Modifier.height(15.dp))
 
                 // CONFIRM PASSWORD FIELD
-                Text(
-                    text = "Confirm Password",
-                    fontWeight = FontWeight.SemiBold
-                )
+                Text(text = "Confirm Password", fontWeight = FontWeight.SemiBold)
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = confirmPassword,
@@ -245,11 +241,57 @@ fun SignUp() {
                     onClick = {
                         when {
                             fullName.isBlank() -> Toast.makeText(context, "Full name is required", Toast.LENGTH_SHORT).show()
+
                             email.isBlank() -> Toast.makeText(context, "Email is required", Toast.LENGTH_SHORT).show()
+
+
                             password.isBlank() -> Toast.makeText(context, "Password is required", Toast.LENGTH_SHORT).show()
+
                             confirmPassword.isBlank() -> Toast.makeText(context, "Confirm password is required", Toast.LENGTH_SHORT).show()
+
                             password != confirmPassword -> Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
-                            else -> Toast.makeText(context, "Sign up successful!", Toast.LENGTH_SHORT).show()
+
+                            else -> {
+
+                                userViewModel.register(email, password) { success, message, uid ->
+
+                                    if (success) {
+
+                                        val user = UserModel(
+                                            uid = uid,
+                                            fullName = fullName,
+                                            email = email,
+                                            password = password
+                                        )
+
+                                        userViewModel.addUser(uid, user) { addSuccess, addMessage ->
+
+                                            if (addSuccess) {
+
+                                                Toast.makeText(
+                                                    context,
+                                                    "Signup Successful",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+
+                                                fullName = ""
+                                                email = ""
+                                                password = ""
+                                                confirmPassword = ""
+
+                                                passwordVisible = false
+                                                confirmPasswordVisible = false
+
+                                            } else {
+                                                Toast.makeText(context, addMessage, Toast.LENGTH_LONG).show()
+                                            }
+                                        }
+
+                                    } else {
+                                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                                    }
+                                }
+                            }
                         }
                     },
                     modifier = Modifier
@@ -266,10 +308,7 @@ fun SignUp() {
                             .fillMaxSize()
                             .background(
                                 brush = Brush.horizontalGradient(
-                                    colors = listOf(
-                                        Color(0xFF0066FF),
-                                        Color(0xFF16D64D)
-                                    )
+                                    colors = listOf(Color(0xFF0066FF), Color(0xFF16D64D))
                                 )
                             ),
                         contentAlignment = Alignment.Center
@@ -285,7 +324,7 @@ fun SignUp() {
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // back to login
+                // BACK TO LOGIN LINK
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
