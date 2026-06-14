@@ -1,6 +1,7 @@
 package com.example.tutorbridge.view
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -36,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -45,8 +47,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tutorbridge.R
+import com.example.tutorbridge.repo.UserRepoImpl
 import com.example.tutorbridge.view.ui.theme.TutorBridgeTheme
+import com.example.tutorbridge.viewmodel.UserViewModel
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +70,9 @@ fun Login() {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val userViewModel: UserViewModel = viewModel()
 
     val scrollState = rememberScrollState()
 
@@ -198,7 +206,31 @@ fun Login() {
                 Spacer(modifier = Modifier.height(30.dp))
 
                 Button(
-                    onClick = { /* Handle Login Logic */ },
+                    onClick = {
+
+                        // check Logcat
+                        println("checking login button is clicked or not ")
+
+                        when {
+                            email.isBlank() -> {
+                                Toast.makeText(context, "Email is required", Toast.LENGTH_SHORT).show()
+                            }
+
+                            password.isBlank() -> {
+                                Toast.makeText(context, "Password is required", Toast.LENGTH_SHORT).show()
+                            }
+
+                            else -> {
+                                userViewModel.login(email.trim(), password.trim()) { success, message ->
+                                    Toast.makeText(
+                                        context,
+                                        message,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),

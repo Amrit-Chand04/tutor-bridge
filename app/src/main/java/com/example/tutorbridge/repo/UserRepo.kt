@@ -14,4 +14,10 @@ interface UserRepo {
         model: UserModel,
         callback: (Boolean, String) -> Unit
     )
+
+    fun login(
+        email: String,
+        password: String,
+        callback: (Boolean, String) -> Unit
+    )
 }

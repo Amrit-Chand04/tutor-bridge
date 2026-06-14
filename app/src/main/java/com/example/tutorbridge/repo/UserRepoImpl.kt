@@ -54,6 +54,30 @@ class UserRepoImpl : UserRepo {
             }
     }
 
+    override fun login(
+        email: String,
+        password: String,
+        callback: (Boolean, String) -> Unit
+    ) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnSuccessListener {
+                callback(true, "Login successful")
+            }
+
+            .addOnFailureListener { exception ->
+
+                val message = when (exception) {
+
+                    is com.google.firebase.auth.FirebaseAuthInvalidCredentialsException ->
+                        "Incorrect email or password"
+
+                    else ->
+                        "Login failed. Please try again"
+                }
+
+                callback(false, message)
+            }
+    }
 
 
 }
