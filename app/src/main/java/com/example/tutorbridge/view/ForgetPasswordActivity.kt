@@ -1,6 +1,7 @@
 package com.example.tutorbridge.view
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tutorbridge.R
 import com.example.tutorbridge.view.ui.theme.TutorBridgeTheme
+import com.example.tutorbridge.viewmodel.UserViewModel
 
 class ForgetPasswordActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +59,10 @@ class ForgetPasswordActivity : ComponentActivity() {
 @Composable
 fun ForgetPasswordUi() {
     var email by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+
+    val userViewModel: UserViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 
     Column(
         modifier = Modifier
@@ -151,7 +158,18 @@ fun ForgetPasswordUi() {
 
                 // Reset Button
                 ElevatedButton(
-                    onClick = { /* Handle Send Reset Code Logic Here */ },
+                    onClick = {
+
+                        if (email.isBlank()) {
+                            Toast.makeText(context, "Please enter your email address", Toast.LENGTH_SHORT).show()
+                        } else {
+
+                            userViewModel.forgotPassword(email.trim()) { success, message ->
+
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(60.dp),

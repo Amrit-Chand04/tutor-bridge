@@ -20,4 +20,9 @@ interface UserRepo {
         password: String,
         callback: (Boolean, String) -> Unit
     )
+
+    fun forgotPassword(
+        email: String,
+        callback: (Boolean, String) -> Unit
+    )
 }

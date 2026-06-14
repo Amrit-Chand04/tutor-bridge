@@ -32,4 +32,11 @@ class UserViewModel : ViewModel() {
     ){
         repo.login(email,password,callback)
     }
+
+    fun forgotPassword(
+        email: String,
+        callback: (Boolean, String) -> Unit
+    ){
+        repo.forgotPassword(email, callback)
+    }
 }

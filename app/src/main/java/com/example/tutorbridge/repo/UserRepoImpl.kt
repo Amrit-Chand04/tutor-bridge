@@ -79,5 +79,18 @@ class UserRepoImpl : UserRepo {
             }
     }
 
+    override fun forgotPassword(
+        email: String,
+        callback: (Boolean, String) -> Unit
+    ) {
+        auth.sendPasswordResetEmail(email)
+            .addOnSuccessListener {
+                callback(true, "Reset email sent")
+            }
+            .addOnFailureListener {
+                callback(false, "Failed to send reset email")
+            }
+    }
+
 
 }
