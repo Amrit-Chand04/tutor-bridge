@@ -51,8 +51,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tutorbridge.R
 import com.example.tutorbridge.view.ui.theme.TutorBridgeTheme
+import com.example.tutorbridge.viewmodel.UserViewModel
 
 class ChangePassActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +70,8 @@ class ChangePassActivity : ComponentActivity() {
 @Composable
 fun ChangePassBody() {
     val context = LocalContext.current
+    val viewModel: UserViewModel = viewModel()
+    val message = viewModel.message.value
 
     var oldPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
@@ -241,6 +245,20 @@ fun ChangePassBody() {
                             Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
                             return@ElevatedButton
                         }
+                        viewModel.changePassword(
+                            oldPassword,
+                            newPassword,
+                            confirmPassword
+                        ) { success, msg ->
+
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+
+                            if (success) {
+                                oldPassword = ""
+                                newPassword = ""
+                                confirmPassword = ""
+                            }
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -267,6 +285,20 @@ fun ChangePassBody() {
                             fontWeight = FontWeight.Medium
                         )
                     }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                if (message.isNotEmpty()) {
+
+                    Text(
+                        text = message,
+                        color = if (
+                            message.contains("successfully", true)
+                        ) Color(0xFF16D64D)
+                        else Color.Red,
+                        fontSize = 17.sp
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))

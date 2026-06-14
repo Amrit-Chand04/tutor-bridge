@@ -1,5 +1,6 @@
 package com.example.tutorbridge.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -153,6 +154,7 @@ fun Login() {
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("Enter your email") },
+                    singleLine = true,
                     colors = TextFieldDefaults.colors(
                         unfocusedIndicatorColor = Color.Transparent,
                         unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
@@ -175,6 +177,7 @@ fun Login() {
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("Enter your password") },
+                    singleLine = true,
                     colors = TextFieldDefaults.colors(
                         unfocusedIndicatorColor = Color.Transparent,
                         unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
