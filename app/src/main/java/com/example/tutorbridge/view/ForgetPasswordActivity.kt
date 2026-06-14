@@ -1,5 +1,6 @@
 package com.example.tutorbridge.view
 
+import android.app.Activity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -61,6 +62,7 @@ fun ForgetPasswordUi() {
     var email by remember { mutableStateOf("") }
 
     val context = LocalContext.current
+    val activity = context as? Activity
 
     val userViewModel: UserViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 
@@ -146,6 +148,7 @@ fun ForgetPasswordUi() {
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("Enter your email") },
+                    singleLine = true,
                     colors = TextFieldDefaults.colors(
                         unfocusedIndicatorColor = Color.Transparent,
                         unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
@@ -222,7 +225,9 @@ fun ForgetPasswordUi() {
 
                 // Back to Sign In Button
                 ElevatedButton(
-                    onClick = { /* Handle Navigation Back to Sign In Here */ },
+                    onClick = {
+                        activity?.finish()
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(60.dp),

@@ -1,5 +1,6 @@
 package com.example.tutorbridge.view
 
+import android.app.Activity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -7,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,6 +73,7 @@ fun SignUp() {
 
     val userViewModel: UserViewModel = viewModel()
     val context = LocalContext.current
+    val activity = context as? Activity
 
     // State Variables
     var fullName by remember { mutableStateOf("") }
@@ -146,6 +149,7 @@ fun SignUp() {
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("Enter your full name") },
+                    singleLine = true,
                     colors = TextFieldDefaults.colors(
                         unfocusedIndicatorColor = Color.Transparent,
                         unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
@@ -165,6 +169,7 @@ fun SignUp() {
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("Enter your email") },
+                    singleLine = true,
                     colors = TextFieldDefaults.colors(
                         unfocusedIndicatorColor = Color.Transparent,
                         unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
@@ -185,6 +190,7 @@ fun SignUp() {
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("Enter your password") },
+                    singleLine = true,
                     colors = TextFieldDefaults.colors(
                         unfocusedIndicatorColor = Color.Transparent,
                         unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
@@ -215,6 +221,7 @@ fun SignUp() {
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("Confirm your password") },
+                    singleLine = true,
                     colors = TextFieldDefaults.colors(
                         unfocusedIndicatorColor = Color.Transparent,
                         unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
@@ -333,7 +340,10 @@ fun SignUp() {
                     Text(
                         text = "Login",
                         color = Color(0xFF0066FF),
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable {
+                            activity?.finish()
+                        }
                     )
                 }
             }

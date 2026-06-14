@@ -54,8 +54,13 @@ fun SplashBody() {
 
         if (isLoggedIn) {
             // TODO: Route to Dashboard Activity
+
         } else {
             // TODO: Route to Login/Welcome Activity
+
+            val intent = Intent(context, LoginActivity::class.java)
+            context.startActivity(intent)
+            activity?.finish()
         }
     }
 

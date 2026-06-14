@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -204,6 +205,10 @@ fun Login() {
                     color = Color(0xFF0066FF),
                     textAlign = TextAlign.End,
                     modifier = Modifier.fillMaxWidth()
+                        .clickable{
+                            val intent = Intent(context, ForgetPasswordActivity::class.java)
+                            context.startActivity(intent)
+                        }
                 )
 
                 Spacer(modifier = Modifier.height(30.dp))
@@ -276,7 +281,11 @@ fun Login() {
                     Text(
                         text = "Sign Up",
                         color = Color(0xFF0066FF),
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable {
+                            val intent = Intent(context, SignUpActivity::class.java)
+                            context.startActivity(intent)
+                        }
                     )
                 }
             }
