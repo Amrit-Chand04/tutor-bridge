@@ -5,34 +5,110 @@ import androidx.lifecycle.ViewModel
 import com.example.tutorbridge.model.UserModel
 import com.example.tutorbridge.repo.UserRepo
 import com.example.tutorbridge.repo.UserRepoImpl
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class UserViewModel : ViewModel() {
 
     private val repo: UserRepo = UserRepoImpl()
     var message = mutableStateOf("")
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     fun register(
+        fullName: String,
         email: String,
         password: String,
-        callback: (Boolean, String, String) -> Unit
-    ) {
-        repo.register(email, password, callback)
-    }
-
-    fun addUser(
-        uid: String,
-        model: UserModel,
+        confirmPassword: String,
+        role: String,
         callback: (Boolean, String) -> Unit
     ) {
-        repo.addUser(uid, model, callback)
-    }
+        // Validation
+        if (fullName.isBlank()) {
+            callback(false, "Full name is required")
+            return
+        }
 
+        if (email.isBlank()) {
+            callback(false, "Email is required")
+            return
+        }
+
+        if (password.isBlank()) {
+            callback(false, "Password is required")
+            return
+        }
+
+        if (confirmPassword.isBlank()) {
+            callback(false, "Confirm Password is required")
+            return
+        }
+
+        if (password != confirmPassword) {
+            callback(false, "Passwords do not match")
+            return
+        }
+
+        if (role.isBlank()) {
+            callback(false, "Please select a role")
+            return
+        }
+
+        _isLoading.value = true
+
+        repo.register(email, password) { success, message, uid ->
+
+            if (!success) {
+                callback(false, message)
+                return@register
+            }
+
+            val user = UserModel(
+                uid = uid,
+                fullName = fullName,
+                email = email,
+                role = role
+            )
+
+            repo.addUser(uid, user) { addSuccess, addMessage ->
+
+                _isLoading.value = false
+
+                if (addSuccess) {
+                    callback(true, addMessage)
+                } else {
+                    callback(false, addMessage)
+                }
+            }
+        }
+    }
     fun login(
         email: String,
         password: String,
         callback: (Boolean, String) -> Unit
     ){
-        repo.login(email,password,callback)
+        if (email.isBlank()) {
+            callback(false, "Email is required")
+            return
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            callback(false, "Enter a valid email")
+            return
+        }
+
+        if (password.isBlank()) {
+            callback(false, "Password is required")
+            return
+        }
+
+        _isLoading.value = true
+
+        repo.login(email.trim(), password.trim()) { success, message ->
+            _isLoading.value = false
+            callback(success, message)
+        }
     }
 
     fun forgotPassword(

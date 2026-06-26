@@ -20,17 +20,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -84,6 +88,10 @@ fun SignUp() {
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
 
+    var selectedRole by remember { mutableStateOf("") }
+
+    val isLoading = userViewModel.isLoading.collectAsState().value
+
     val scrollState = rememberScrollState()
 
     Column(
@@ -131,7 +139,7 @@ fun SignUp() {
                 Text(
                     text = "Create Account!",
                     style = TextStyle(
-                        fontSize = 30.sp,
+                        fontSize = 26.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
                     ),
@@ -142,7 +150,7 @@ fun SignUp() {
 
                 // FULL NAME FIELD
                 Text(text = "Full Name", fontWeight = FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 OutlinedTextField(
                     value = fullName,
                     onValueChange = { fullName = it },
@@ -158,11 +166,11 @@ fun SignUp() {
                     )
                 )
 
-                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // EMAIL FIELD
                 Text(text = "Email Address", fontWeight = FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
@@ -179,11 +187,11 @@ fun SignUp() {
                 )
 
 
-                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // PASSWORD FIELD
                 Text(text = "Password", fontWeight = FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
@@ -210,11 +218,11 @@ fun SignUp() {
                     }
                 )
 
-                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // CONFIRM PASSWORD FIELD
                 Text(text = "Confirm Password", fontWeight = FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 OutlinedTextField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
@@ -241,63 +249,66 @@ fun SignUp() {
                     }
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Select Role",
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = selectedRole == "Student",
+                            onClick = { selectedRole = "Student" }
+                        )
+                        Text("Student")
+                    }
+
+                    Spacer(modifier = Modifier.width(24.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = selectedRole == "Teacher",
+                            onClick = { selectedRole = "Teacher" }
+                        )
+                        Text("Teacher")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
 
                 // SIGN UP BUTTON
                 Button(
                     onClick = {
-                        when {
-                            fullName.isBlank() -> Toast.makeText(context, "Full name is required", Toast.LENGTH_SHORT).show()
 
-                            email.isBlank() -> Toast.makeText(context, "Email is required", Toast.LENGTH_SHORT).show()
+                        userViewModel.register(
+                            fullName = fullName,
+                            email = email,
+                            password = password,
+                            confirmPassword = confirmPassword,
+                            role = selectedRole
+                        ) { success, message ->
 
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 
-                            password.isBlank() -> Toast.makeText(context, "Password is required", Toast.LENGTH_SHORT).show()
+                            if (success) {
+                                fullName = ""
+                                email = ""
+                                password = ""
+                                confirmPassword = ""
 
-                            confirmPassword.isBlank() -> Toast.makeText(context, "Confirm password is required", Toast.LENGTH_SHORT).show()
-
-                            password != confirmPassword -> Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
-
-                            else -> {
-
-                                userViewModel.register(email, password) { success, message, uid ->
-
-                                    if (success) {
-
-                                        val user = UserModel(
-                                            uid = uid,
-                                            fullName = fullName,
-                                            email = email,
-                                            password = password
-                                        )
-
-                                        userViewModel.addUser(uid, user) { addSuccess, addMessage ->
-
-                                            if (addSuccess) {
-
-                                                Toast.makeText(
-                                                    context,
-                                                    "Signup Successful",
-                                                    Toast.LENGTH_LONG
-                                                ).show()
-
-                                                fullName = ""
-                                                email = ""
-                                                password = ""
-                                                confirmPassword = ""
-
-                                                passwordVisible = false
-                                                confirmPasswordVisible = false
-
-                                            } else {
-                                                Toast.makeText(context, addMessage, Toast.LENGTH_LONG).show()
-                                            }
-                                        }
-
-                                    } else {
-                                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-                                    }
-                                }
+                                passwordVisible = false
+                                confirmPasswordVisible = false
+                                selectedRole = ""
                             }
                         }
                     },
@@ -320,12 +331,20 @@ fun SignUp() {
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "Sign Up",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(
+                                text = "Sign Up",
+                                color = Color.White,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
 
