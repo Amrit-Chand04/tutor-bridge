@@ -1,16 +1,20 @@
 package com.example.tutorbridge.viewmodel
 
+import android.app.Application
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import com.example.tutorbridge.model.UserModel
+import com.example.tutorbridge.repo.SessionRepo
+import com.example.tutorbridge.repo.SessionRepoImpl
 import com.example.tutorbridge.repo.UserRepo
 import com.example.tutorbridge.repo.UserRepoImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class UserViewModel : ViewModel() {
+class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repo: UserRepo = UserRepoImpl()
+    private val sessionRepo: SessionRepo = SessionRepoImpl(application)
     var message = mutableStateOf("")
 
     private val _isLoading = MutableStateFlow(false)
@@ -47,8 +51,12 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    fun isLoggedIn(): Boolean = sessionRepo.isLoggedIn()
+    fun getRole(): String = sessionRepo.getRole()
+
     fun logOut() {
         repo.logOut()
+        sessionRepo.clearSession()
         _isLoggedOut.value = true
     }
 
@@ -155,7 +163,9 @@ class UserViewModel : ViewModel() {
             if (success) {
                 repo.getCurrentUser { _, user ->
                     _isLoading.value = false
-                    callback(true, message, user?.role ?: "")
+                    val role = user?.role ?: ""
+                    sessionRepo.saveSession(role)
+                    callback(true, message, role)
                 }
             } else {
                 _isLoading.value = false
