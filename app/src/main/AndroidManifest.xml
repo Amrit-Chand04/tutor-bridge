@@ -12,6 +12,28 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TutorBridge">
         <activity
+            android:name=".view.MyApplications"
+            android:exported="true"
+            android:label="@string/title_activity_my_applications"
+            android:theme="@style/Theme.TutorBridge">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".view.TutorDashboard"
+            android:exported="true"
+            android:label="@string/title_activity_tutor_dashboard"
+            android:theme="@style/Theme.TutorBridge">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".view.MyRequest"
             android:exported="true"
             android:label="@string/title_activity_my_request"

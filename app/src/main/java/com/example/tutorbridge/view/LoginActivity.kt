@@ -236,6 +236,11 @@ fun Login() {
                                 val intent = Intent(context, StudentDashboard::class.java)
                                 context.startActivity(intent)
                             }
+
+                            if (success && role == "Teacher") {
+                                val intent = Intent(context, TutorDashboard::class.java)
+                                context.startActivity(intent)
+                            }
                         }
                     },
                     modifier = Modifier

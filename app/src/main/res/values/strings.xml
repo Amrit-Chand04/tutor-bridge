@@ -10,4 +10,6 @@
     <string name="title_activity_profile_update">ProfileUpdate</string>
     <string name="title_activity_create_request">CreateRequestActivity</string>
     <string name="title_activity_my_request">MyRequest</string>
+    <string name="title_activity_tutor_dashboard">TutorDashboard</string>
+    <string name="title_activity_my_applications">MyApplications</string>
 </resources>
