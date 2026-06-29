@@ -63,6 +63,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import com.example.tutorbridge.R
 import com.example.tutorbridge.model.CreateRequestModel
 import com.example.tutorbridge.view.ui.theme.TutorBridgeTheme
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import com.example.tutorbridge.viewmodel.ApplyTuitionViewModel
 import com.example.tutorbridge.viewmodel.RequestViewModel
 import com.example.tutorbridge.viewmodel.UserViewModel
 import androidx.compose.runtime.collectAsState
@@ -154,16 +157,21 @@ fun TutorDashboardScreen() {
 @Composable
 fun TutorScreen(
     userViewModel: UserViewModel = viewModel(),
-    requestViewModel: RequestViewModel = viewModel()
+    requestViewModel: RequestViewModel = viewModel(),
+    applyViewModel: ApplyTuitionViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val user by userViewModel.user.collectAsState()
     val requests by requestViewModel.requests.collectAsState()
     val isLoading by requestViewModel.isLoading.collectAsState()
+    val applyLoading by applyViewModel.isLoading.collectAsState()
+    val appliedRequestIds by applyViewModel.appliedRequestIds.collectAsState()
+    val filteredRequests = requests.filter { it.requestId !in appliedRequestIds }
 
     LaunchedEffect(Unit) {
         userViewModel.loadCurrentUser()
         requestViewModel.loadAllRequests()
+        applyViewModel.loadAppliedRequestIds()
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
@@ -219,7 +227,7 @@ fun TutorScreen(
                     CircularProgressIndicator(color = Color(0xFF0066FF))
                 }
 
-            } else if (requests.isEmpty()) {
+            } else if (filteredRequests.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(text = "No requests found", color = Color.Gray, fontSize = 15.sp)
                 }
@@ -228,10 +236,17 @@ fun TutorScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     contentPadding = PaddingValues(bottom = 12.dp)
                 ) {
-                    items(requests) { request ->
-                        TutorRequestCard(request = request, onApply = {
-                            Toast.makeText(context, "Applied for ${request.subject}", Toast.LENGTH_SHORT).show()
-                        })
+                    items(filteredRequests) { request ->
+                        TutorRequestCard(
+                            request = request,
+                            isApplyLoading = applyLoading,
+                            onApply = {
+                                applyViewModel.apply(request) { success, msg ->
+                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    if (success) applyViewModel.loadAppliedRequestIds()
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -240,7 +255,59 @@ fun TutorScreen(
 }
 
 @Composable
-fun TutorRequestCard(request: CreateRequestModel, onApply: () -> Unit) {
+fun TutorRequestCard(request: CreateRequestModel, isApplyLoading: Boolean = false, onApply: () -> Unit) {
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(20.dp),
+            title = {
+                Text(text = "Apply for this tuition?", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF1A1A2E))
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(text = "Subject: ${request.subject}", fontSize = 14.sp, color = Color(0xFF1A1A2E))
+                    Text(text = "Grade: ${request.grade}", fontSize = 14.sp, color = Color(0xFF1A1A2E))
+                    Text(text = "Monthly Budget: Rs. ${request.budget}", fontSize = 14.sp, color = Color(0xFF1A1A2E))
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showDialog = false; onApply() },
+                    enabled = !isApplyLoading,
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                    contentPadding = PaddingValues()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .background(
+                                brush = Brush.horizontalGradient(colors = listOf(Color(0xFF0066FF), Color(0xFF24C16B))),
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                            .padding(horizontal = 20.dp, vertical = 10.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isApplyLoading) {
+                            CircularProgressIndicator(color = Color.White, strokeWidth = 2.dp, modifier = Modifier.size(16.dp))
+                        } else {
+                            Text("Apply", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                        }
+                    }
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("Cancel", color = Color.Gray)
+                }
+            }
+        )
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -276,7 +343,7 @@ fun TutorRequestCard(request: CreateRequestModel, onApply: () -> Unit) {
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
-                onClick = onApply,
+                onClick = { showDialog = true },
                 modifier = Modifier.fillMaxWidth().height(42.dp),
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
