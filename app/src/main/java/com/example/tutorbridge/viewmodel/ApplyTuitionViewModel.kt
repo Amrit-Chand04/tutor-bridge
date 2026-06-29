@@ -5,6 +5,7 @@ import com.example.tutorbridge.model.ApplyTuitionModel
 import com.example.tutorbridge.model.CreateRequestModel
 import com.example.tutorbridge.repo.ApplyTuitionRepo
 import com.example.tutorbridge.repo.ApplyTuitionRepoImpl
+import com.example.tutorbridge.repo.UserRepoImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -27,15 +28,21 @@ class ApplyTuitionViewModel : ViewModel() {
     private val _isLoadingApplications = MutableStateFlow(false)
     val isLoadingApplications: StateFlow<Boolean> = _isLoadingApplications
 
-    fun loadApplicationsForRequest(requestId: String) {
+    fun loadApplicationsForRequest(requestId: String, onLoaded: (List<ApplyTuitionModel>) -> Unit = {}) {
         _isLoadingApplications.value = true
         repo.getApplicationsForRequest(requestId) { _, list ->
-            _isLoadingApplications.value = false
             _requestApplications.value = list
+            _isLoadingApplications.value = false
+            onLoaded(list)
         }
     }
 
     fun acceptApplication(application: ApplyTuitionModel, callback: (Boolean, String) -> Unit) {
+        val alreadyAccepted = _requestApplications.value.any { it.status == "accepted" }
+        if (alreadyAccepted && application.status != "accepted") {
+            callback(false, "You've already accepted a tutor for this request")
+            return
+        }
         _isLoading.value = true
         repo.updateApplicationStatus(application.tutorId, application.applicationId, "accepted") { success, msg ->
             _isLoading.value = false
@@ -83,17 +90,20 @@ class ApplyTuitionViewModel : ViewModel() {
     fun apply(request: CreateRequestModel, contactNumber: String, callback: (Boolean, String) -> Unit) {
         if (contactNumber.isBlank()) { callback(false, "Phone number is required"); return }
         _isLoading.value = true
-        val model = ApplyTuitionModel(
-            requestId = request.requestId,
-            studentId = request.userId,
-            subject = request.subject,
-            grade = request.grade,
-            budget = request.budget,
-            contactNumber = contactNumber.trim()
-        )
-        repo.applyForRequest(model) { success, msg ->
-            _isLoading.value = false
-            callback(success, msg)
+        UserRepoImpl().getCurrentUser { _, userData ->
+            val model = ApplyTuitionModel(
+                requestId = request.requestId,
+                studentId = request.userId,
+                subject = request.subject,
+                grade = request.grade,
+                budget = request.budget,
+                contactNumber = contactNumber.trim(),
+                tutorName = userData?.fullName ?: ""
+            )
+            repo.applyForRequest(model) { success, msg ->
+                _isLoading.value = false
+                callback(success, msg)
+            }
         }
     }
 }

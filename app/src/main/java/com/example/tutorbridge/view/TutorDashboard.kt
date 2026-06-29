@@ -222,7 +222,7 @@ fun TutorScreen(
 
         Text(text = "Apply for suitable tuition requests", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1A1A2E))
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // Bordered scrollable section
         Box(

@@ -1,5 +1,6 @@
 package com.example.tutorbridge.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -58,7 +59,12 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tutorbridge.model.ApplyTuitionModel
 import com.example.tutorbridge.view.ui.theme.TutorBridgeTheme
+import androidx.compose.foundation.lazy.LazyColumn as ReviewLazyColumn
+import androidx.compose.material3.HorizontalDivider
+import com.example.tutorbridge.model.ReviewModel
 import com.example.tutorbridge.viewmodel.ApplyTuitionViewModel
+import com.example.tutorbridge.viewmodel.ReviewViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 class MyApplications : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,9 +83,13 @@ fun MyApplicationsScreen() {
 
     val context = LocalContext.current
     val viewModel: ApplyTuitionViewModel = viewModel()
+    val reviewViewModel: ReviewViewModel = viewModel()
     val applications by viewModel.myApplications.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val reviews by reviewViewModel.reviews.collectAsState()
+    val isReviewLoading by reviewViewModel.isLoading.collectAsState()
     var editingApplication by remember { mutableStateOf<ApplyTuitionModel?>(null) }
+    var showReviewsDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.loadMyApplications()
@@ -91,6 +101,14 @@ fun MyApplicationsScreen() {
             viewModel = viewModel,
             onDismiss = { editingApplication = null },
             onSuccess = { editingApplication = null }
+        )
+    }
+
+    if (showReviewsDialog) {
+        MyReviewsDialog(
+            reviews = reviews,
+            isLoading = isReviewLoading,
+            onDismiss = { showReviewsDialog = false }
         )
     }
 
@@ -150,6 +168,11 @@ fun MyApplicationsScreen() {
                             viewModel.deleteApplication(application.applicationId) { _, msg ->
                                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             }
+                        },
+                        onViewReviews = {
+                            val tutorId = FirebaseAuth.getInstance().currentUser?.uid ?: return@ApplicationCard
+                            reviewViewModel.loadReviews(tutorId)
+                            showReviewsDialog = true
                         }
                     )
                 }
@@ -270,8 +293,9 @@ fun EditApplicationDialog(
 }
 
 @Composable
-fun ApplicationCard(application: ApplyTuitionModel, onEdit: () -> Unit, onDelete: () -> Unit) {
+fun ApplicationCard(application: ApplyTuitionModel, onEdit: () -> Unit, onDelete: () -> Unit, onViewReviews: () -> Unit = {}) {
 
+    val context = LocalContext.current
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     if (showDeleteDialog) {
@@ -363,6 +387,78 @@ fun ApplicationCard(application: ApplyTuitionModel, onEdit: () -> Unit, onDelete
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                 ) {
                     Text(text = "Delete", fontSize = 13.sp, color = Color.White)
+                }
+            }
+
+            if (application.status == "accepted") {
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = onViewReviews,
+                    modifier = Modifier.fillMaxWidth().height(40.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEAF2FF))
+                ) {
+                    Text(text = "View Reviews", fontSize = 13.sp, color = Color(0xFF0066FF), fontWeight = FontWeight.SemiBold)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MyReviewsDialog(
+    reviews: List<ReviewModel>,
+    isLoading: Boolean,
+    onDismiss: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(8.dp)
+        ) {
+            Column(modifier = Modifier.padding(20.dp)) {
+
+                Text("My Reviews", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1A1A2E))
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                when {
+                    isLoading -> {
+                        Box(modifier = Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(color = Color(0xFF0066FF))
+                        }
+                    }
+                    reviews.isEmpty() -> {
+                        Box(modifier = Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center) {
+                            Text("No reviews yet", color = Color.Gray, fontSize = 14.sp)
+                        }
+                    }
+                    else -> {
+                        Column(modifier = Modifier.verticalScroll(rememberScrollState()).weight(1f, fill = false)) {
+                            reviews.forEachIndexed { index, review ->
+                                Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+                                    Text(StarText(review.rating), fontSize = 20.sp, color = Color(0xFFF59E0B))
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(review.comment, fontSize = 13.sp, color = Color(0xFF1A1A2E))
+                                }
+                                if (index < reviews.lastIndex) {
+                                    HorizontalDivider(color = Color(0xFFF0F0F0))
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = onDismiss,
+                    modifier = Modifier.fillMaxWidth().height(42.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF0F0F0))
+                ) {
+                    Text("Close", color = Color(0xFF1A1A2E), fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                 }
             }
         }
