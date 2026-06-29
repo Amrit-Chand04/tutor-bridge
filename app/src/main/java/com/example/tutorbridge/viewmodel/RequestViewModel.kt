@@ -54,6 +54,14 @@ class RequestViewModel : ViewModel() {
         }
     }
 
+    fun loadAllRequests() {
+        _isLoading.value = true
+        repo.getAllRequests { _, list ->
+            _isLoading.value = false
+            _requests.value = list
+        }
+    }
+
     fun loadMyRequests() {
         _isLoading.value = true
         repo.getMyRequests { _, list ->

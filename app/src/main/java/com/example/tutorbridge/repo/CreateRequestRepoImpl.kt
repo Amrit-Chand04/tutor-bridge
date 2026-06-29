@@ -66,6 +66,25 @@ class CreateRequestRepoImpl : CreateRequestRepo {
             .addOnFailureListener { callback(false, it.message ?: "Update failed") }
     }
 
+    override fun getAllRequests(callback: (Boolean, List<CreateRequestModel>) -> Unit) {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val list = mutableListOf<CreateRequestModel>()
+                for (userSnapshot in snapshot.children) {
+                    for (requestSnapshot in userSnapshot.children) {
+                        val req = requestSnapshot.getValue(CreateRequestModel::class.java)
+                        if (req != null) list.add(req)
+                    }
+                }
+                callback(true, list)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback(false, emptyList())
+            }
+        })
+    }
+
     override fun deleteRequest(requestId: String, callback: (Boolean, String) -> Unit) {
         val uid = auth.currentUser?.uid ?: run {
             callback(false, "User not logged in")

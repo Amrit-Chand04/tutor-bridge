@@ -1,20 +1,27 @@
 package com.example.tutorbridge.viewmodel
 
+import android.app.Application
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import com.example.tutorbridge.model.UserModel
+import com.example.tutorbridge.repo.SessionRepo
+import com.example.tutorbridge.repo.SessionRepoImpl
 import com.example.tutorbridge.repo.UserRepo
 import com.example.tutorbridge.repo.UserRepoImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class UserViewModel : ViewModel() {
+class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repo: UserRepo = UserRepoImpl()
+    private val sessionRepo: SessionRepo = SessionRepoImpl(application)
     var message = mutableStateOf("")
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _isUserLoading = MutableStateFlow(false)
+    val isUserLoading: StateFlow<Boolean> = _isUserLoading
 
     private val _user = MutableStateFlow<UserModel?>(null)
     val user: StateFlow<UserModel?> = _user
@@ -44,13 +51,19 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    fun isLoggedIn(): Boolean = sessionRepo.isLoggedIn()
+    fun getRole(): String = sessionRepo.getRole()
+
     fun logOut() {
         repo.logOut()
+        sessionRepo.clearSession()
         _isLoggedOut.value = true
     }
 
     fun loadCurrentUser() {
+        _isUserLoading.value = true
         repo.getCurrentUser { success, userData ->
+            _isUserLoading.value = false
             if (success && userData != null) {
                 _user.value = userData
             }
@@ -150,7 +163,9 @@ class UserViewModel : ViewModel() {
             if (success) {
                 repo.getCurrentUser { _, user ->
                     _isLoading.value = false
-                    callback(true, message, user?.role ?: "")
+                    val role = user?.role ?: ""
+                    sessionRepo.saveSession(role)
+                    callback(true, message, role)
                 }
             } else {
                 _isLoading.value = false
@@ -171,21 +186,13 @@ class UserViewModel : ViewModel() {
         newPassword: String,
         confirmPassword: String,
         callback: (Boolean, String) -> Unit
-    ){
-        // validation check
-        if (newPassword.length < 6) {
-            message.value = "Password must be at least 6 characters"
-            return
-        }
+    ) {
+        if (newPassword.length < 6) { callback(false, "Password must be at least 6 characters"); return }
+        if (newPassword != confirmPassword) { callback(false, "New and confirm password do not match"); return }
 
-        if (newPassword != confirmPassword) {
-            message.value = "New Password and Confirm Password do not match"
-            return
-        }
-
-        // call repo
+        _isLoading.value = true
         repo.changePassword(oldPassword, newPassword) { success, msg ->
-            message.value = msg
+            _isLoading.value = false
             callback(success, msg)
         }
     }
