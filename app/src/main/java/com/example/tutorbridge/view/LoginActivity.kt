@@ -25,12 +25,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,6 +77,8 @@ fun Login() {
 
     val context = LocalContext.current
     val userViewModel: UserViewModel = viewModel()
+
+    val isLoading = userViewModel.isLoading.collectAsState().value
 
     val scrollState = rememberScrollState()
 
@@ -219,23 +223,23 @@ fun Login() {
                         // check Logcat
                         println("checking login button is clicked or not ")
 
-                        when {
-                            email.isBlank() -> {
-                                Toast.makeText(context, "Email is required", Toast.LENGTH_SHORT).show()
+
+
+                        userViewModel.login(
+                            email,
+                            password
+                        ) { success, message, role ->
+
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
+                            if (success && role == "Student") {
+                                val intent = Intent(context, StudentDashboard::class.java)
+                                context.startActivity(intent)
                             }
 
-                            password.isBlank() -> {
-                                Toast.makeText(context, "Password is required", Toast.LENGTH_SHORT).show()
-                            }
-
-                            else -> {
-                                userViewModel.login(email.trim(), password.trim()) { success, message ->
-                                    Toast.makeText(
-                                        context,
-                                        message,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                            if (success && role == "Teacher") {
+                                val intent = Intent(context, TutorDashboard::class.java)
+                                context.startActivity(intent)
                             }
                         }
                     },
@@ -261,12 +265,20 @@ fun Login() {
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "Login",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                color = Color.White,
+                                strokeWidth = 2.dp,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        } else {
+                            Text(
+                                text = "Login",
+                                color = Color.White,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
 
