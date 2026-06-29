@@ -249,7 +249,7 @@ fun HomeScreen(viewModel: UserViewModel = viewModel()) {
                 ),
                 title = "Create Tuition Request",
                 subtitle = "Post your requirements and connect with qualified tutors.",
-                onClick = {}
+                onClick = { context.startActivity(Intent(context, CreateRequestActivity::class.java)) }
             )
         }
     }

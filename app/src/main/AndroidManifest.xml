@@ -12,6 +12,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TutorBridge">
         <activity
+            android:name=".view.CreateRequestActivity"
+            android:exported="true"
+            android:label="@string/title_activity_create_request"
+            android:theme="@style/Theme.TutorBridge">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".view.ProfileUpdate"
             android:exported="true"
             android:label="@string/title_activity_profile_update"
