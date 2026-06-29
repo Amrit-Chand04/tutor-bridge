@@ -56,6 +56,16 @@ class CreateRequestRepoImpl : CreateRequestRepo {
         })
     }
 
+    override fun updateRequest(model: CreateRequestModel, callback: (Boolean, String) -> Unit) {
+        val uid = auth.currentUser?.uid ?: run {
+            callback(false, "User not logged in")
+            return
+        }
+        ref.child(uid).child(model.requestId).setValue(model)
+            .addOnSuccessListener { callback(true, "Request updated successfully") }
+            .addOnFailureListener { callback(false, it.message ?: "Update failed") }
+    }
+
     override fun deleteRequest(requestId: String, callback: (Boolean, String) -> Unit) {
         val uid = auth.currentUser?.uid ?: run {
             callback(false, "User not logged in")

@@ -62,6 +62,47 @@ class RequestViewModel : ViewModel() {
         }
     }
 
+    fun updateRequest(
+        requestId: String,
+        userId: String,
+        subject: String,
+        grade: String,
+        preferredGender: String,
+        location: String,
+        budget: String,
+        preferredTime: String,
+        description: String,
+        contactNumber: String,
+        callback: (Boolean, String) -> Unit
+    ) {
+        if (subject.isBlank()) { callback(false, "Subject is required"); return }
+        if (grade.isBlank()) { callback(false, "Grade is required"); return }
+        if (location.isBlank()) { callback(false, "Location is required"); return }
+        if (budget.isBlank()) { callback(false, "Budget is required"); return }
+        if (preferredTime.isBlank()) { callback(false, "Preferred time is required"); return }
+        if (contactNumber.isBlank()) { callback(false, "Contact number is required"); return }
+
+        _isLoading.value = true
+
+        val model = CreateRequestModel(
+            requestId = requestId,
+            userId = userId,
+            subject = subject.trim(),
+            grade = grade.trim(),
+            preferredGender = preferredGender,
+            location = location.trim(),
+            budget = budget.trim(),
+            preferredTime = preferredTime.trim(),
+            description = description.trim(),
+            contactNumber = contactNumber.trim()
+        )
+
+        repo.updateRequest(model) { success, msg ->
+            _isLoading.value = false
+            callback(success, msg)
+        }
+    }
+
     fun deleteRequest(requestId: String, callback: (Boolean, String) -> Unit) {
         repo.deleteRequest(requestId) { success, msg ->
             if (success) _requests.value = _requests.value.filter { it.requestId != requestId }
