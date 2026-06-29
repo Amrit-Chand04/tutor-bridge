@@ -2,6 +2,7 @@ package com.example.tutorbridge.view
 
 import android.app.Activity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -32,7 +33,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,7 +51,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tutorbridge.view.ui.theme.TutorBridgeTheme
+import com.example.tutorbridge.viewmodel.RequestViewModel
 
 class CreateRequestActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +73,8 @@ fun CreateRequestScreen() {
 
     val context = LocalContext.current
     val activity = context as? Activity
+    val requestViewModel: RequestViewModel = viewModel()
+    val isLoading by requestViewModel.isLoading.collectAsState()
 
     var subject by remember { mutableStateOf("") }
     var grade by remember { mutableStateOf("") }
@@ -208,8 +217,9 @@ fun CreateRequestScreen() {
                     OutlinedTextField(
                         value = budget,
                         onValueChange = { budget = it.filter { c -> c.isDigit() } },
-                        placeholder = { Text("1000", color = Color.Gray) },
+                        placeholder = { Text("8000", color = Color.Gray) },
                         singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.fillMaxWidth(),
                         colors = fieldColors
@@ -253,6 +263,7 @@ fun CreateRequestScreen() {
                         onValueChange = { contactNumber = it.filter { c -> c.isDigit() } },
                         placeholder = { Text("98XXXXXXXX", color = Color.Gray) },
                         singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                         shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.fillMaxWidth(),
                         colors = fieldColors
@@ -261,7 +272,26 @@ fun CreateRequestScreen() {
                     Spacer(modifier = Modifier.height(28.dp))
 
                     Button(
-                        onClick = { },
+                        onClick = {
+                            requestViewModel.submitRequest(
+                                subject, grade, preferredGender,
+                                location, budget, preferredTime,
+                                description, contactNumber
+                            ) { success, msg ->
+                                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                if (success) {
+                                    subject = ""
+                                    grade = ""
+                                    preferredGender = "Any"
+                                    location = ""
+                                    budget = ""
+                                    preferredTime = ""
+                                    description = ""
+                                    contactNumber = ""
+                                }
+                            }
+                        },
+                        enabled = !isLoading,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
@@ -280,12 +310,19 @@ fun CreateRequestScreen() {
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "Submit Request",
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    color = Color.White,
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Text(
+                                    text = "Submit Request",
+                                    color = Color.White,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                     }
                 }
