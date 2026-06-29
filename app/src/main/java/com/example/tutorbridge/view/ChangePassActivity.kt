@@ -23,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,6 +35,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,7 +73,7 @@ class ChangePassActivity : ComponentActivity() {
 fun ChangePassBody() {
     val context = LocalContext.current
     val viewModel: UserViewModel = viewModel()
-    val message = viewModel.message.value
+    val isLoading by viewModel.isLoading.collectAsState()
 
     var oldPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
@@ -255,14 +257,8 @@ fun ChangePassBody() {
                             Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
                             return@ElevatedButton
                         }
-                        viewModel.changePassword(
-                            oldPassword,
-                            newPassword,
-                            confirmPassword
-                        ) { success, msg ->
-
+                        viewModel.changePassword(oldPassword, newPassword, confirmPassword) { success, msg ->
                             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-
                             if (success) {
                                 oldPassword = ""
                                 newPassword = ""
@@ -270,9 +266,8 @@ fun ChangePassBody() {
                             }
                         }
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp),
+                    enabled = !isLoading,
+                    modifier = Modifier.fillMaxWidth().height(60.dp),
                     shape = RoundedCornerShape(18.dp),
                     elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 8.dp),
                     colors = ButtonDefaults.elevatedButtonColors(containerColor = Color.Transparent),
@@ -288,27 +283,12 @@ fun ChangePassBody() {
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "Change Password",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Medium
-                        )
+                        if (isLoading) {
+                            CircularProgressIndicator(color = Color.White, strokeWidth = 2.dp, modifier = Modifier.size(24.dp))
+                        } else {
+                            Text(text = "Change Password", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                        }
                     }
-                }
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                if (message.isNotEmpty()) {
-
-                    Text(
-                        text = message,
-                        color = if (
-                            message.contains("successfully", true)
-                        ) Color(0xFF16D64D)
-                        else Color.Red,
-                        fontSize = 17.sp
-                    )
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))

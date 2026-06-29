@@ -171,21 +171,13 @@ class UserViewModel : ViewModel() {
         newPassword: String,
         confirmPassword: String,
         callback: (Boolean, String) -> Unit
-    ){
-        // validation check
-        if (newPassword.length < 6) {
-            message.value = "Password must be at least 6 characters"
-            return
-        }
+    ) {
+        if (newPassword.length < 6) { callback(false, "Password must be at least 6 characters"); return }
+        if (newPassword != confirmPassword) { callback(false, "New and confirm password do not match"); return }
 
-        if (newPassword != confirmPassword) {
-            message.value = "New Password and Confirm Password do not match"
-            return
-        }
-
-        // call repo
+        _isLoading.value = true
         repo.changePassword(oldPassword, newPassword) { success, msg ->
-            message.value = msg
+            _isLoading.value = false
             callback(success, msg)
         }
     }
