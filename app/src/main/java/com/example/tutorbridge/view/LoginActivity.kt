@@ -228,12 +228,18 @@ fun Login() {
                         userViewModel.login(
                             email,
                             password
-                        ) { success, message ->
+                        ) { success, message, role ->
 
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 
-                            if (success) {
-                                // Navigate to Home Screen
+                            if (success && role == "Student") {
+                                val intent = Intent(context, StudentDashboard::class.java)
+                                context.startActivity(intent)
+                            }
+
+                            if (success && role == "Teacher") {
+                                val intent = Intent(context, TutorDashboard::class.java)
+                                context.startActivity(intent)
                             }
                         }
                     },
