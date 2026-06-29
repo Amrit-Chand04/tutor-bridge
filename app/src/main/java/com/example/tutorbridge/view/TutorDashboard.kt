@@ -51,8 +51,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import com.example.tutorbridge.R
+import com.example.tutorbridge.model.CreateRequestModel
 import com.example.tutorbridge.view.ui.theme.TutorBridgeTheme
+import com.example.tutorbridge.viewmodel.RequestViewModel
 import com.example.tutorbridge.viewmodel.UserViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.LaunchedEffect
@@ -141,95 +152,147 @@ fun TutorDashboardScreen() {
 }
 
 @Composable
-fun TutorScreen(viewModel: UserViewModel = viewModel()) {
-
+fun TutorScreen(
+    userViewModel: UserViewModel = viewModel(),
+    requestViewModel: RequestViewModel = viewModel()
+) {
     val context = LocalContext.current
-    val user by viewModel.user.collectAsState()
+    val user by userViewModel.user.collectAsState()
+    val requests by requestViewModel.requests.collectAsState()
+    val isLoading by requestViewModel.isLoading.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.loadCurrentUser()
+        userViewModel.loadCurrentUser()
+        requestViewModel.loadAllRequests()
     }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(top = 8.dp, bottom = 24.dp)
-    ) {
+    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
 
-        // Top bar
-        item {
-            Row(
+        // Fixed top section
+        Row(
+            modifier = Modifier.fillMaxWidth().height(90.dp).padding(top = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(R.drawable.tutor_bridge),
+                contentDescription = "Logo",
+                modifier = Modifier.size(80.dp).clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(90.dp),
+                    .size(42.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFFEAF2FF))
+                    .clickable { context.startActivity(Intent(context, ProfileUpdate::class.java)) },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color(0xFF0066FF), modifier = Modifier.size(22.dp))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(text = "Welcome Back,", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1A1A2E))
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = user?.fullName ?: "", fontSize = 26.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1A1A2E))
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(text = "Apply for suitable tuition requests", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1A1A2E))
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        // Bordered scrollable section
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .border(width = 2.dp, color = Color(0xFFD0E4FF), shape = RoundedCornerShape(16.dp))
+                .padding(12.dp)
+        ) {
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color(0xFF0066FF))
+                }
+
+            } else if (requests.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = "No requests found", color = Color.Gray, fontSize = 15.sp)
+                }
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 12.dp)
+                ) {
+                    items(requests) { request ->
+                        TutorRequestCard(request = request, onApply = {
+                            Toast.makeText(context, "Applied for ${request.subject}", Toast.LENGTH_SHORT).show()
+                        })
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TutorRequestCard(request: CreateRequestModel, onApply: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, Color(0xFFE8F0FF)),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painterResource(R.drawable.tutor_bridge),
-                    contentDescription = "Logo",
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
+                Text(text = request.subject, fontSize = 17.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1A1A2E))
+                Text(text = "Rs. ${request.budget}", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF24C16B))
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(text = "Grade: ${request.grade}", fontSize = 13.sp, color = Color.Gray)
+            Text(text = "Gender: ${request.preferredGender}", fontSize = 13.sp, color = Color.Gray)
+            Text(text = "Location: ${request.location}", fontSize = 13.sp, color = Color.Gray)
+            Text(text = "Time: ${request.preferredTime}", fontSize = 13.sp, color = Color.Gray)
+
+            if (request.description.isNotBlank()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = request.description, fontSize = 13.sp, color = Color.Gray, maxLines = 2)
+            }
+
+            Text(text = "Contact: ${request.contactNumber}", fontSize = 13.sp, color = Color.Gray)
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                onClick = onApply,
+                modifier = Modifier.fillMaxWidth().height(42.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                contentPadding = PaddingValues()
+            ) {
                 Box(
                     modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFFEAF2FF))
-                        .clickable { context.startActivity(Intent(context, ProfileUpdate::class.java)) },
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.horizontalGradient(colors = listOf(Color(0xFF0066FF), Color(0xFF24C16B))),
+                            shape = RoundedCornerShape(10.dp)
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        Icons.Default.Person,
-                        contentDescription = "Profile",
-                        tint = Color(0xFF0066FF),
-                        modifier = Modifier.size(22.dp)
-                    )
+                    Text(text = "Apply", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
                 }
-            }
-        }
-
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = "Welcome Back,",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1A1A2E)
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(
-                        text = user?.fullName?: "",
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1A1A2E)
-                    )
-                    Spacer(modifier = Modifier.height(35.dp))
-                }
-
-            }
-        }
-
-        item {
-            Column {
-                Text(
-                    text = "Apply for suitable tuition requests",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1A1A2E)
-                )
-
             }
         }
     }

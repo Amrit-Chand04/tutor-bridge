@@ -7,4 +7,5 @@ interface CreateRequestRepo {
     fun getMyRequests(callback: (Boolean, List<CreateRequestModel>) -> Unit)
     fun deleteRequest(requestId: String, callback: (Boolean, String) -> Unit)
     fun updateRequest(model: CreateRequestModel, callback: (Boolean, String) -> Unit)
+    fun getAllRequests(callback: (Boolean, List<CreateRequestModel>) -> Unit)
 }
