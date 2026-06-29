@@ -1,5 +1,6 @@
 package com.example.tutorbridge.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -154,6 +155,13 @@ fun MyRequestScreen() {
                     RequestCard(
                         request = request,
                         onEdit = { editingRequest = request },
+                        onViewApplications = {
+                            val intent = Intent(context, ViewApplications::class.java).apply {
+                                putExtra("requestId", request.requestId)
+                                putExtra("subject", request.subject)
+                            }
+                            context.startActivity(intent)
+                        },
                         onDelete = {
                             viewModel.deleteRequest(request.requestId) { _, msg ->
                                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
@@ -319,7 +327,7 @@ fun EditRequestDialog(
 }
 
 @Composable
-fun RequestCard(request: CreateRequestModel, onEdit: () -> Unit, onDelete: () -> Unit) {
+fun RequestCard(request: CreateRequestModel, onEdit: () -> Unit, onViewApplications: () -> Unit, onDelete: () -> Unit) {
 
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -378,6 +386,17 @@ fun RequestCard(request: CreateRequestModel, onEdit: () -> Unit, onDelete: () ->
             Text(text = "Contact: ${request.contactNumber}", fontSize = 13.sp, color = Color.Gray)
 
             Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                onClick = onViewApplications,
+                modifier = Modifier.fillMaxWidth().height(40.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEAF2FF))
+            ) {
+                Text(text = "View Applications", fontSize = 13.sp, color = Color(0xFF0066FF), fontWeight = FontWeight.SemiBold)
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row {
                 Button(

@@ -21,6 +21,31 @@ class ApplyTuitionViewModel : ViewModel() {
     private val _myApplications = MutableStateFlow<List<ApplyTuitionModel>>(emptyList())
     val myApplications: StateFlow<List<ApplyTuitionModel>> = _myApplications
 
+    private val _requestApplications = MutableStateFlow<List<ApplyTuitionModel>>(emptyList())
+    val requestApplications: StateFlow<List<ApplyTuitionModel>> = _requestApplications
+
+    private val _isLoadingApplications = MutableStateFlow(false)
+    val isLoadingApplications: StateFlow<Boolean> = _isLoadingApplications
+
+    fun loadApplicationsForRequest(requestId: String) {
+        _isLoadingApplications.value = true
+        repo.getApplicationsForRequest(requestId) { _, list ->
+            _isLoadingApplications.value = false
+            _requestApplications.value = list
+        }
+    }
+
+    fun acceptApplication(application: ApplyTuitionModel, callback: (Boolean, String) -> Unit) {
+        repo.updateApplicationStatus(application.tutorId, application.applicationId, "accepted") { success, msg ->
+            if (success) {
+                _requestApplications.value = _requestApplications.value.map {
+                    if (it.applicationId == application.applicationId) it.copy(status = "accepted") else it
+                }
+            }
+            callback(success, msg)
+        }
+    }
+
     fun loadMyApplications() {
         _isLoading.value = true
         repo.getMyApplications { _, list ->

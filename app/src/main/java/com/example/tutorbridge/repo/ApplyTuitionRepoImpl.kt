@@ -52,6 +52,28 @@ class ApplyTuitionRepoImpl : ApplyTuitionRepo {
             .addOnFailureListener { callback(false, it.message ?: "Update failed") }
     }
 
+    override fun getApplicationsForRequest(requestId: String, callback: (Boolean, List<ApplyTuitionModel>) -> Unit) {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val list = mutableListOf<ApplyTuitionModel>()
+                for (tutorSnapshot in snapshot.children) {
+                    for (appSnapshot in tutorSnapshot.children) {
+                        val app = appSnapshot.getValue(ApplyTuitionModel::class.java)
+                        if (app != null && app.requestId == requestId) list.add(app)
+                    }
+                }
+                callback(true, list)
+            }
+            override fun onCancelled(error: DatabaseError) { callback(false, emptyList()) }
+        })
+    }
+
+    override fun updateApplicationStatus(tutorId: String, applicationId: String, status: String, callback: (Boolean, String) -> Unit) {
+        ref.child(tutorId).child(applicationId).child("status").setValue(status)
+            .addOnSuccessListener { callback(true, "Status updated") }
+            .addOnFailureListener { callback(false, it.message ?: "Update failed") }
+    }
+
     override fun getAppliedRequestIds(callback: (List<String>) -> Unit) {
         val uid = auth.currentUser?.uid ?: run { callback(emptyList()); return }
         ref.child(uid).addListenerForSingleValueEvent(object : ValueEventListener {
