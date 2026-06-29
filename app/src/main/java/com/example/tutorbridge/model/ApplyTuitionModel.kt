@@ -8,5 +8,6 @@ data class ApplyTuitionModel(
     val subject: String = "",
     val grade: String = "",
     val budget: String = "",
+    val contactNumber: String = "",
     val status: String = "pending"
 )

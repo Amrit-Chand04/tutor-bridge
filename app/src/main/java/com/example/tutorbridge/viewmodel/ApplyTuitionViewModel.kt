@@ -36,20 +36,33 @@ class ApplyTuitionViewModel : ViewModel() {
         }
     }
 
+    fun updateApplication(application: ApplyTuitionModel, contactNumber: String, callback: (Boolean, String) -> Unit) {
+        if (contactNumber.isBlank()) { callback(false, "Phone number is required"); return }
+        _isLoading.value = true
+        val updated = application.copy(contactNumber = contactNumber.trim())
+        repo.updateApplication(updated) { success, msg ->
+            _isLoading.value = false
+            if (success) _myApplications.value = _myApplications.value.map { if (it.applicationId == application.applicationId) updated else it }
+            callback(success, msg)
+        }
+    }
+
     fun loadAppliedRequestIds() {
         repo.getAppliedRequestIds { ids ->
             _appliedRequestIds.value = ids
         }
     }
 
-    fun apply(request: CreateRequestModel, callback: (Boolean, String) -> Unit) {
+    fun apply(request: CreateRequestModel, contactNumber: String, callback: (Boolean, String) -> Unit) {
+        if (contactNumber.isBlank()) { callback(false, "Phone number is required"); return }
         _isLoading.value = true
         val model = ApplyTuitionModel(
             requestId = request.requestId,
             studentId = request.userId,
             subject = request.subject,
             grade = request.grade,
-            budget = request.budget
+            budget = request.budget,
+            contactNumber = contactNumber.trim()
         )
         repo.applyForRequest(model) { success, msg ->
             _isLoading.value = false

@@ -63,8 +63,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import com.example.tutorbridge.R
 import com.example.tutorbridge.model.CreateRequestModel
 import com.example.tutorbridge.view.ui.theme.TutorBridgeTheme
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.text.input.KeyboardType
 import com.example.tutorbridge.viewmodel.ApplyTuitionViewModel
 import com.example.tutorbridge.viewmodel.RequestViewModel
 import com.example.tutorbridge.viewmodel.UserViewModel
@@ -240,8 +244,8 @@ fun TutorScreen(
                         TutorRequestCard(
                             request = request,
                             isApplyLoading = applyLoading,
-                            onApply = {
-                                applyViewModel.apply(request) { success, msg ->
+                            onApply = { contactNumber ->
+                                applyViewModel.apply(request, contactNumber) { success, msg ->
                                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                                     if (success) applyViewModel.loadAppliedRequestIds()
                                 }
@@ -255,9 +259,11 @@ fun TutorScreen(
 }
 
 @Composable
-fun TutorRequestCard(request: CreateRequestModel, isApplyLoading: Boolean = false, onApply: () -> Unit) {
+fun TutorRequestCard(request: CreateRequestModel, isApplyLoading: Boolean = false, onApply: (String) -> Unit) {
 
+    val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
+    var contactNumber by remember { mutableStateOf("") }
 
     if (showDialog) {
         AlertDialog(
@@ -268,15 +274,40 @@ fun TutorRequestCard(request: CreateRequestModel, isApplyLoading: Boolean = fals
                 Text(text = "Apply for this tuition?", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF1A1A2E))
             },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(text = "Subject: ${request.subject}", fontSize = 14.sp, color = Color(0xFF1A1A2E))
                     Text(text = "Grade: ${request.grade}", fontSize = 14.sp, color = Color(0xFF1A1A2E))
                     Text(text = "Monthly Budget: Rs. ${request.budget}", fontSize = 14.sp, color = Color(0xFF1A1A2E))
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text = "Your Phone Number", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF1A1A2E))
+                    OutlinedTextField(
+                        value = contactNumber,
+                        onValueChange = { contactNumber = it.filter { c -> c.isDigit() } },
+                        placeholder = { Text("98XXXXXXXX", color = Color.Gray) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color(0xFFF8FAFC),
+                            unfocusedContainerColor = Color(0xFFF8FAFC),
+                            focusedIndicatorColor = Color(0xFF0066FF),
+                            unfocusedIndicatorColor = Color(0xFFE0E0E0)
+                        )
+                    )
                 }
             },
             confirmButton = {
                 Button(
-                    onClick = { showDialog = false; onApply() },
+                    onClick = {
+                        if (contactNumber.isBlank()) {
+                            Toast.makeText(context, "Phone number is required", Toast.LENGTH_SHORT).show()
+                        } else {
+                            showDialog = false
+                            onApply(contactNumber)
+                            contactNumber = ""
+                        }
+                    },
                     enabled = !isApplyLoading,
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
@@ -301,7 +332,7 @@ fun TutorRequestCard(request: CreateRequestModel, isApplyLoading: Boolean = fals
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDialog = false }) {
+                TextButton(onClick = { showDialog = false; contactNumber = "" }) {
                     Text("Cancel", color = Color.Gray)
                 }
             }

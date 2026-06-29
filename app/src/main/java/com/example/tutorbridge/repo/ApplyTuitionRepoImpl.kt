@@ -45,6 +45,13 @@ class ApplyTuitionRepoImpl : ApplyTuitionRepo {
             .addOnFailureListener { callback(false, it.message ?: "Delete failed") }
     }
 
+    override fun updateApplication(model: ApplyTuitionModel, callback: (Boolean, String) -> Unit) {
+        val uid = auth.currentUser?.uid ?: run { callback(false, "User not logged in"); return }
+        ref.child(uid).child(model.applicationId).setValue(model)
+            .addOnSuccessListener { callback(true, "Application updated successfully") }
+            .addOnFailureListener { callback(false, it.message ?: "Update failed") }
+    }
+
     override fun getAppliedRequestIds(callback: (List<String>) -> Unit) {
         val uid = auth.currentUser?.uid ?: run { callback(emptyList()); return }
         ref.child(uid).addListenerForSingleValueEvent(object : ValueEventListener {
