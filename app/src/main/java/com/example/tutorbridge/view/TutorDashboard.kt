@@ -166,6 +166,7 @@ fun TutorScreen(
 ) {
     val context = LocalContext.current
     val user by userViewModel.user.collectAsState()
+    val isUserLoading by userViewModel.isUserLoading.collectAsState()
     val requests by requestViewModel.requests.collectAsState()
     val isLoading by requestViewModel.isLoading.collectAsState()
     val applyLoading by applyViewModel.isLoading.collectAsState()
@@ -176,6 +177,13 @@ fun TutorScreen(
         userViewModel.loadCurrentUser()
         requestViewModel.loadAllRequests()
         applyViewModel.loadAppliedRequestIds()
+    }
+
+    if (isUserLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = Color(0xFF0066FF))
+        }
+        return@TutorScreen
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
@@ -207,7 +215,7 @@ fun TutorScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(text = "Welcome Back,", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1A1A2E))
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(20.dp))
         Text(text = user?.fullName ?: "", fontSize = 26.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1A1A2E))
 
         Spacer(modifier = Modifier.height(24.dp))
