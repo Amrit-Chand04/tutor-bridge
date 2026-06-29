@@ -133,5 +133,16 @@ class UserRepoImpl : UserRepo {
             }
     }
 
+    override fun getCurrentUser(callback: (Boolean, UserModel?) -> Unit) {
+        val uid = auth.currentUser?.uid ?: run { callback(false, null); return }
+        ref.child(uid).get()
+            .addOnSuccessListener { snapshot ->
+                val user = snapshot.getValue(UserModel::class.java)
+                callback(true, user)
+            }
+            .addOnFailureListener {
+                callback(false, null)
+            }
+    }
 
 }

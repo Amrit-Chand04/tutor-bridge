@@ -32,4 +32,6 @@ interface UserRepo {
         newPassword: String,
         callback: (Boolean, String) -> Unit
     )
+
+    fun getCurrentUser(callback: (Boolean, UserModel?) -> Unit)
 }

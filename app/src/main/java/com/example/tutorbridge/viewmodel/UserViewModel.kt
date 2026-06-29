@@ -86,28 +86,35 @@ class UserViewModel : ViewModel() {
     fun login(
         email: String,
         password: String,
-        callback: (Boolean, String) -> Unit
+        callback: (Boolean, String, String) -> Unit
     ){
         if (email.isBlank()) {
-            callback(false, "Email is required")
+            callback(false, "Email is required", "")
             return
         }
 
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            callback(false, "Enter a valid email")
+            callback(false, "Enter a valid email", "")
             return
         }
 
         if (password.isBlank()) {
-            callback(false, "Password is required")
+            callback(false, "Password is required", "")
             return
         }
 
         _isLoading.value = true
 
         repo.login(email.trim(), password.trim()) { success, message ->
-            _isLoading.value = false
-            callback(success, message)
+            if (success) {
+                repo.getCurrentUser { _, user ->
+                    _isLoading.value = false
+                    callback(true, message, user?.role ?: "")
+                }
+            } else {
+                _isLoading.value = false
+                callback(false, message, "")
+            }
         }
     }
 
