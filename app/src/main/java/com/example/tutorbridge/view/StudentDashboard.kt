@@ -263,16 +263,6 @@ fun MyRequestsScreen() {
 }
 
 @Composable
-fun SettingsScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Settings", fontSize = 20.sp, color = Color.Gray)
-    }
-}
-
-@Composable
 fun ActionCard(
     icon: ImageVector,
     iconGradient: Brush,

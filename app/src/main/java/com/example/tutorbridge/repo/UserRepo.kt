@@ -34,4 +34,6 @@ interface UserRepo {
     )
 
     fun getCurrentUser(callback: (Boolean, UserModel?) -> Unit)
+
+    fun logOut()
 }

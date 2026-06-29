@@ -80,8 +80,18 @@ fun ChangePassBody() {
     val scrollState = rememberScrollState()
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = Color(0xFFE8F5E9),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        Color(0xFFF8FAFC),
+                        Color(0xFFEAF2FF),
+                        Color(0xFFE4FBE8)
+                    )
+                )
+            ),
+        containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
                 title = { },

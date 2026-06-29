@@ -6,4 +6,5 @@
     <string name="title_activity_change_pass">ChangePassActivity</string>
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_student_dashboard">StudentDashboard</string>
+    <string name="title_activity_setting">SettingActivity</string>
 </resources>

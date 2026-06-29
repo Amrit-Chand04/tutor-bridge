@@ -133,6 +133,10 @@ class UserRepoImpl : UserRepo {
             }
     }
 
+    override fun logOut() {
+        auth.signOut()
+    }
+
     override fun getCurrentUser(callback: (Boolean, UserModel?) -> Unit) {
         val uid = auth.currentUser?.uid ?: run { callback(false, null); return }
         ref.child(uid).get()

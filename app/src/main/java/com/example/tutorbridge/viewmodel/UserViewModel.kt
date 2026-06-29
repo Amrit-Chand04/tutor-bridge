@@ -19,6 +19,14 @@ class UserViewModel : ViewModel() {
     private val _user = MutableStateFlow<UserModel?>(null)
     val user: StateFlow<UserModel?> = _user
 
+    private val _isLoggedOut = MutableStateFlow(false)
+    val isLoggedOut: StateFlow<Boolean> = _isLoggedOut
+
+    fun logOut() {
+        repo.logOut()
+        _isLoggedOut.value = true
+    }
+
     fun loadCurrentUser() {
         repo.getCurrentUser { success, userData ->
             if (success && userData != null) {
