@@ -14,6 +14,9 @@ class RequestViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _requests = MutableStateFlow<List<CreateRequestModel>>(emptyList())
+    val requests: StateFlow<List<CreateRequestModel>> = _requests
+
     fun submitRequest(
         subject: String,
         grade: String,
@@ -47,6 +50,21 @@ class RequestViewModel : ViewModel() {
 
         repo.addRequest(model) { success, msg ->
             _isLoading.value = false
+            callback(success, msg)
+        }
+    }
+
+    fun loadMyRequests() {
+        _isLoading.value = true
+        repo.getMyRequests { _, list ->
+            _isLoading.value = false
+            _requests.value = list
+        }
+    }
+
+    fun deleteRequest(requestId: String, callback: (Boolean, String) -> Unit) {
+        repo.deleteRequest(requestId) { success, msg ->
+            if (success) _requests.value = _requests.value.filter { it.requestId != requestId }
             callback(success, msg)
         }
     }

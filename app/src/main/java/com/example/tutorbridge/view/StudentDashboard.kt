@@ -79,6 +79,7 @@ class StudentDashboard : ComponentActivity() {
 @Composable
 fun StudentDashboardScreen() {
 
+    val context = LocalContext.current
     var selectedIndex by remember { mutableStateOf(0) }
 
     Scaffold(
@@ -140,7 +141,7 @@ fun StudentDashboardScreen() {
         ) {
             when (selectedIndex) {
                 0 -> HomeScreen()
-                1 -> MyRequestsScreen()
+                1 -> MyRequestScreen()
                 2 -> SettingsScreen()
             }
         }
@@ -252,16 +253,6 @@ fun HomeScreen(viewModel: UserViewModel = viewModel()) {
                 onClick = { context.startActivity(Intent(context, CreateRequestActivity::class.java)) }
             )
         }
-    }
-}
-
-@Composable
-fun MyRequestsScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("My Requests", fontSize = 20.sp, color = Color.Gray)
     }
 }
 
