@@ -140,30 +140,30 @@ fun SignUp() {
                 Image(
                     painter = painterResource(R.drawable.tutor_bridge_final),
                     contentDescription = "TutorBridge Logo",
-                    modifier = Modifier.size(120.dp)
+                    modifier = Modifier.size(80.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             // Form card
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.White, RoundedCornerShape(24.dp))
-                    .padding(20.dp)
+                    .padding(16.dp)
             ) {
 
                 Text(
                     text = "Create Account",
-                    fontSize = 26.sp,
+                    fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     color = Color(0xFF1A1A2E),
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(2.dp))
 
                 Text(
                     text = "Fill in the details to get started",
@@ -173,11 +173,11 @@ fun SignUp() {
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Full Name
-                Text(text = "Full Name", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(6.dp))
+                Text(text = "Full Name", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = fullName,
                     onValueChange = { fullName = it },
@@ -193,11 +193,11 @@ fun SignUp() {
                     )
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Email
-                Text(text = "Email Address", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(6.dp))
+                Text(text = "Email Address", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
@@ -213,11 +213,11 @@ fun SignUp() {
                     )
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Password
-                Text(text = "Password", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(6.dp))
+                Text(text = "Password", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
@@ -244,11 +244,11 @@ fun SignUp() {
                     )
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Confirm Password
-                Text(text = "Confirm Password", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(6.dp))
+                Text(text = "Confirm Password", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
@@ -275,10 +275,10 @@ fun SignUp() {
                     )
                 )
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Role selection
-                Text(text = "Select Role", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                Text(text = "Select Role", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Row(
@@ -302,7 +302,7 @@ fun SignUp() {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 // Sign Up button
                 Button(
@@ -328,7 +328,7 @@ fun SignUp() {
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
+                        .height(50.dp),
                     shape = RoundedCornerShape(18.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                     contentPadding = PaddingValues()
@@ -361,7 +361,7 @@ fun SignUp() {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Login link
                 Row(
@@ -377,10 +377,10 @@ fun SignUp() {
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(6.dp))
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
