@@ -137,6 +137,16 @@ class UserRepoImpl : UserRepo {
         auth.signOut()
     }
 
+    override fun updateUser(uid: String, fullName: String, callback: (Boolean, String) -> Unit) {
+        ref.child(uid).child("fullName").setValue(fullName)
+            .addOnSuccessListener {
+                callback(true, "Profile updated successfully")
+            }
+            .addOnFailureListener {
+                callback(false, it.message ?: "Update failed")
+            }
+    }
+
     override fun getCurrentUser(callback: (Boolean, UserModel?) -> Unit) {
         val uid = auth.currentUser?.uid ?: run { callback(false, null); return }
         ref.child(uid).get()

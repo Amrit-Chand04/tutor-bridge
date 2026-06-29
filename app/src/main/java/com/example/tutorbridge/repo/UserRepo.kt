@@ -36,4 +36,6 @@ interface UserRepo {
     fun getCurrentUser(callback: (Boolean, UserModel?) -> Unit)
 
     fun logOut()
+
+    fun updateUser(uid: String, fullName: String, callback: (Boolean, String) -> Unit)
 }

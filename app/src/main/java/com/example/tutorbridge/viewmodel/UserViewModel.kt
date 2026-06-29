@@ -22,6 +22,28 @@ class UserViewModel : ViewModel() {
     private val _isLoggedOut = MutableStateFlow(false)
     val isLoggedOut: StateFlow<Boolean> = _isLoggedOut
 
+    private val _profileMessage = MutableStateFlow<String?>(null)
+    val profileMessage: StateFlow<String?> = _profileMessage
+
+    fun clearProfileMessage() {
+        _profileMessage.value = null
+    }
+
+    fun updateUser(uid: String, fullName: String) {
+        if (fullName.isBlank()) {
+            _profileMessage.value = "Name cannot be empty"
+            return
+        }
+        _isLoading.value = true
+        repo.updateUser(uid, fullName) { success, msg ->
+            _isLoading.value = false
+            _profileMessage.value = msg
+            if (success) {
+                _user.value = _user.value?.copy(fullName = fullName)
+            }
+        }
+    }
+
     fun logOut() {
         repo.logOut()
         _isLoggedOut.value = true

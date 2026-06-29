@@ -19,13 +19,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,12 +47,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tutorbridge.R
 import com.example.tutorbridge.view.ui.theme.TutorBridgeTheme
 import com.example.tutorbridge.viewmodel.UserViewModel
@@ -52,21 +62,24 @@ class ForgetPasswordActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ForgetPasswordUi()
+            TutorBridgeTheme {
+                ForgetPasswordUi()
+            }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForgetPasswordUi() {
-    var email by remember { mutableStateOf("") }
 
+    var email by remember { mutableStateOf("") }
     val context = LocalContext.current
     val activity = context as? Activity
+    val userViewModel: UserViewModel = viewModel()
+    val scrollState = rememberScrollState()
 
-    val userViewModel: UserViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
-
-    Column(
+    Scaffold(
         modifier = Modifier
             .fillMaxSize()
             .background(
@@ -77,16 +90,36 @@ fun ForgetPasswordUi() {
                         Color(0xFFE4FBE8)
                     )
                 )
+            ),
+        containerColor = Color.Transparent,
+        topBar = {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(onClick = { activity?.finish() }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color(0xFF1A1A2E)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
             )
-    ) {
+        }
+    ) { innerPadding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(15.dp)
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
+                .verticalScroll(scrollState)
         ) {
-            Spacer(modifier = Modifier.height(50.dp))
 
-            // Logo Container
+            // Logo
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
@@ -94,53 +127,43 @@ fun ForgetPasswordUi() {
                 Image(
                     painter = painterResource(R.drawable.tutor_bridge_final),
                     contentDescription = "App Logo",
-                    modifier = Modifier.size(150.dp)
+                    modifier = Modifier.size(130.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Main Content Card
+            // Card
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(25.dp)
-                    )
-                    .padding(13.dp)
+                    .background(Color.White, RoundedCornerShape(24.dp))
+                    .padding(20.dp)
             ) {
-                Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
                     text = "Forgot Password?",
-                    style = TextStyle(
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    ),
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    color = Color(0xFF1A1A2E),
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = "No worries! Enter your email address and we’ll send you a password reset link.",
-                    fontSize = 17.sp,
+                    text = "Enter your email and we'll send you a reset link.",
+                    fontSize = 14.sp,
                     color = Color.Gray,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(34.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
-                Text(
-                    text = "Email Address",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp
-                )
-
-                Spacer(modifier = Modifier.height(14.dp))
+                Text(text = "Email Address", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                Spacer(modifier = Modifier.height(6.dp))
 
                 OutlinedTextField(
                     value = email,
@@ -151,34 +174,30 @@ fun ForgetPasswordUi() {
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
                         unfocusedIndicatorColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        focusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        focusedIndicatorColor = Color.Blue,
+                        unfocusedContainerColor = Color.Gray.copy(alpha = 0.08f),
+                        focusedContainerColor = Color.Gray.copy(alpha = 0.08f),
+                        focusedIndicatorColor = Color(0xFF0066FF)
                     )
                 )
 
-                Spacer(modifier = Modifier.height(37.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
-                // Reset Button
-                ElevatedButton(
+                // Send Reset Email button
+                Button(
                     onClick = {
-
                         if (email.isBlank()) {
-                            Toast.makeText(context, "Please enter your email address", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Please enter your email", Toast.LENGTH_SHORT).show()
                         } else {
-
-                            userViewModel.forgotPassword(email.trim()) { success, message ->
-
+                            userViewModel.forgotPassword(email.trim()) { _, message ->
                                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                             }
                         }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(60.dp),
+                        .height(56.dp),
                     shape = RoundedCornerShape(18.dp),
-                    elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 8.dp),
-                    colors = ButtonDefaults.elevatedButtonColors(containerColor = Color.Transparent),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                     contentPadding = PaddingValues()
                 ) {
                     Box(
@@ -186,54 +205,43 @@ fun ForgetPasswordUi() {
                             .fillMaxSize()
                             .background(
                                 brush = Brush.horizontalGradient(
-                                    colors = listOf(Color(0xFF0066FF), Color(0xFF16D64D))
-                                )
+                                    colors = listOf(Color(0xFF0066FF), Color(0xFF24C16B))
+                                ),
+                                shape = RoundedCornerShape(18.dp)
                             ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "Send Reset Email",
                             color = Color.White,
-                            fontSize = 20.sp
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                // OR Divider Block
+                // OR divider
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        color = Color.LightGray
-                    )
-                    Text(
-                        text = "  OR  ",
-                        color = Color.Gray,
-                        fontSize = 16.sp
-                    )
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        color = Color.LightGray
-                    )
+                    HorizontalDivider(modifier = Modifier.weight(1f), color = Color.LightGray)
+                    Text(text = "  OR  ", color = Color.Gray, fontSize = 14.sp)
+                    HorizontalDivider(modifier = Modifier.weight(1f), color = Color.LightGray)
                 }
 
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                // Back to Sign In Button
-                ElevatedButton(
-                    onClick = {
-                        activity?.finish()
-                    },
+                // Back to Sign In button
+                Button(
+                    onClick = { activity?.finish() },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(60.dp),
+                        .height(56.dp),
                     shape = RoundedCornerShape(18.dp),
-                    elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 8.dp),
-                    colors = ButtonDefaults.elevatedButtonColors(containerColor = Color.Transparent),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                     contentPadding = PaddingValues()
                 ) {
                     Box(
@@ -241,25 +249,30 @@ fun ForgetPasswordUi() {
                             .fillMaxSize()
                             .background(
                                 brush = Brush.horizontalGradient(
-                                    colors = listOf(Color(0xFF0066FF), Color(0xFF16D64D))
-                                )
+                                    colors = listOf(Color(0xFF0066FF), Color(0xFF24C16B))
+                                ),
+                                shape = RoundedCornerShape(18.dp)
                             ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "Back to Sign In",
                             color = Color.White,
-                            fontSize = 20.sp
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(20.dp))
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ForgetPasswordUiPreview() {
     TutorBridgeTheme {

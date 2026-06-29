@@ -7,4 +7,5 @@
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_student_dashboard">StudentDashboard</string>
     <string name="title_activity_setting">SettingActivity</string>
+    <string name="title_activity_profile_update">ProfileUpdate</string>
 </resources>

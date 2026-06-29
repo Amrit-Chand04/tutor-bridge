@@ -1,5 +1,6 @@
 package com.example.tutorbridge.view
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -44,6 +45,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -148,6 +150,7 @@ fun StudentDashboardScreen() {
 @Composable
 fun HomeScreen(viewModel: UserViewModel = viewModel()) {
 
+    val context = LocalContext.current
     val user by viewModel.user.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -184,7 +187,7 @@ fun HomeScreen(viewModel: UserViewModel = viewModel()) {
                         .size(42.dp)
                         .clip(CircleShape)
                         .background(Color(0xFFEAF2FF))
-                        .clickable { },
+                        .clickable { context.startActivity(Intent(context, ProfileUpdate::class.java)) },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
