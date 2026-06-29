@@ -36,7 +36,9 @@ class ApplyTuitionViewModel : ViewModel() {
     }
 
     fun acceptApplication(application: ApplyTuitionModel, callback: (Boolean, String) -> Unit) {
+        _isLoading.value = true
         repo.updateApplicationStatus(application.tutorId, application.applicationId, "accepted") { success, msg ->
+            _isLoading.value = false
             if (success) {
                 _requestApplications.value = _requestApplications.value.map {
                     if (it.applicationId == application.applicationId) it.copy(status = "accepted") else it

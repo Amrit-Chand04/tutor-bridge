@@ -77,7 +77,8 @@ fun ViewApplicationsScreen(requestId: String, subject: String) {
     val activity = context as? Activity
     val viewModel: ApplyTuitionViewModel = viewModel()
     val applications by viewModel.requestApplications.collectAsState()
-    val isLoading by viewModel.isLoadingApplications.collectAsState()
+    val isLoadingApplications by viewModel.isLoadingApplications.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadApplicationsForRequest(requestId)
@@ -114,7 +115,7 @@ fun ViewApplicationsScreen(requestId: String, subject: String) {
                 .padding(horizontal = 16.dp)
         ) {
             when {
-                isLoading -> {
+                isLoadingApplications -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator(color = Color(0xFF0066FF))
                     }
@@ -159,6 +160,7 @@ fun ViewApplicationsScreen(requestId: String, subject: String) {
                         items(applications) { application ->
                             ApplicationItemCard(
                                 application = application,
+                                isLoading = isLoading,
                                 onAccept = {
                                     viewModel.acceptApplication(application) { success, msg ->
                                         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
@@ -174,7 +176,7 @@ fun ViewApplicationsScreen(requestId: String, subject: String) {
 }
 
 @Composable
-fun ApplicationItemCard(application: ApplyTuitionModel, onAccept: () -> Unit) {
+fun ApplicationItemCard(application: ApplyTuitionModel, isLoading: Boolean, onAccept: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -224,6 +226,7 @@ fun ApplicationItemCard(application: ApplyTuitionModel, onAccept: () -> Unit) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(
                     onClick = onAccept,
+                    enabled = !isLoading,
                     modifier = Modifier.fillMaxWidth().height(40.dp),
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
@@ -240,7 +243,11 @@ fun ApplicationItemCard(application: ApplyTuitionModel, onAccept: () -> Unit) {
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(text = "Accept", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                        if (isLoading) {
+                            CircularProgressIndicator(color = Color.White, strokeWidth = 2.dp, modifier = Modifier.size(20.dp))
+                        } else {
+                            Text(text = "Accept", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                        }
                     }
                 }
             }
