@@ -57,6 +57,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tutorbridge.R
 import com.example.tutorbridge.view.ui.theme.TutorBridgeTheme
+import com.example.tutorbridge.viewmodel.UserViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class StudentDashboard : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -142,7 +146,13 @@ fun StudentDashboardScreen() {
 }
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(viewModel: UserViewModel = viewModel()) {
+
+    val user by viewModel.user.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadCurrentUser()
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -197,17 +207,19 @@ fun HomeScreen() {
                 Column {
                     Text(
                         text = "Welcome Back,",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1A1A2E)
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = user?.fullName?: "",
                         fontSize = 26.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF1A1A2E)
                     )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = "Find the right tutor for your learning needs.",
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
-                    Spacer(modifier = Modifier.height(60.dp))
+                    Spacer(modifier = Modifier.height(35.dp))
                 }
 
             }

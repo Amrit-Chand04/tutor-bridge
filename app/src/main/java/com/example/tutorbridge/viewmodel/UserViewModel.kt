@@ -16,6 +16,17 @@ class UserViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _user = MutableStateFlow<UserModel?>(null)
+    val user: StateFlow<UserModel?> = _user
+
+    fun loadCurrentUser() {
+        repo.getCurrentUser { success, userData ->
+            if (success && userData != null) {
+                _user.value = userData
+            }
+        }
+    }
+
     fun register(
         fullName: String,
         email: String,
