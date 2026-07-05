@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -154,7 +155,9 @@ fun CreateRequestScreen() {
                         placeholder = { Text("Math, Computer", color = Color.Gray) },
                         singleLine = true,
                         shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("subject"),
                         colors = fieldColors
                     )
 
@@ -168,7 +171,9 @@ fun CreateRequestScreen() {
                         placeholder = { Text("Class 10", color = Color.Gray) },
                         singleLine = true,
                         shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("grade"),
                         colors = fieldColors
                     )
 
@@ -208,7 +213,9 @@ fun CreateRequestScreen() {
                         placeholder = { Text("Chabahil, KTM", color = Color.Gray) },
                         singleLine = true,
                         shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("location"),
                         colors = fieldColors
                     )
 
@@ -223,7 +230,9 @@ fun CreateRequestScreen() {
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("budget"),
                         colors = fieldColors
                     )
 
@@ -237,7 +246,9 @@ fun CreateRequestScreen() {
                         placeholder = { Text("e.g. 5:00 PM – 7:00 PM", color = Color.Gray) },
                         singleLine = true,
                         shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("preferredTime"),
                         colors = fieldColors
                     )
 
@@ -252,7 +263,9 @@ fun CreateRequestScreen() {
                         minLines = 3,
                         maxLines = 5,
                         shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("description"),
                         colors = fieldColors
                     )
 
@@ -267,7 +280,9 @@ fun CreateRequestScreen() {
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                         shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("contactNumber"),
                         colors = fieldColors
                     )
 
@@ -289,7 +304,8 @@ fun CreateRequestScreen() {
                         enabled = !isLoading,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp),
+                            .height(56.dp)
+                            .testTag("submitRequest"),
                         shape = RoundedCornerShape(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                         contentPadding = PaddingValues()

@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -184,7 +185,9 @@ fun SignUp() {
                     value = fullName,
                     onValueChange = { fullName = it },
                     shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("fullName"),
                     placeholder = { Text("Enter your full name") },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
@@ -204,7 +207,9 @@ fun SignUp() {
                     value = email,
                     onValueChange = { email = it },
                     shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("signupEmail"),
                     placeholder = { Text("Enter your email") },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
@@ -224,7 +229,9 @@ fun SignUp() {
                     value = password,
                     onValueChange = { password = it },
                     shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("signupPassword"),
                     placeholder = { Text("Enter your password") },
                     singleLine = true,
                     visualTransformation = if (passwordVisible) androidx.compose.ui.text.input.VisualTransformation.None else androidx.compose.ui.text.input.PasswordVisualTransformation(),
@@ -255,7 +262,9 @@ fun SignUp() {
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
                     shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("confirmPassword"),
                     placeholder = { Text("Confirm your password") },
                     singleLine = true,
                     visualTransformation = if (confirmPasswordVisible) androidx.compose.ui.text.input.VisualTransformation.None else androidx.compose.ui.text.input.PasswordVisualTransformation(),
@@ -324,7 +333,8 @@ fun SignUp() {
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp),
+                        .height(50.dp)
+                        .testTag("signupButton"),
                     shape = RoundedCornerShape(18.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                     contentPadding = PaddingValues()

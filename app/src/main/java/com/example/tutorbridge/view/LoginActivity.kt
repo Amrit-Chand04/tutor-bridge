@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -155,7 +156,9 @@ fun Login() {
                 value = email,
                 onValueChange = { email = it },
                 shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("email"),
                 placeholder = { Text("Enter your email", color = Color.Gray) },
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
@@ -181,7 +184,9 @@ fun Login() {
                 value = password,
                 onValueChange = { password = it },
                 shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("password"),
                 placeholder = { Text("Enter your password", color = Color.Gray) },
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
@@ -236,7 +241,8 @@ fun Login() {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(56.dp)
+                    .testTag("login"),
                 shape = RoundedCornerShape(18.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 contentPadding = PaddingValues()
@@ -285,9 +291,11 @@ fun Login() {
                     fontSize = 14.sp,
                     color = Color(0xFF0066FF),
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable {
-                        context.startActivity(Intent(context, SignUpActivity::class.java))
-                    }
+                    modifier = Modifier
+                        .testTag("signup")
+                        .clickable {
+                            context.startActivity(Intent(context, SignUpActivity::class.java))
+                        }
                 )
             }
         }
