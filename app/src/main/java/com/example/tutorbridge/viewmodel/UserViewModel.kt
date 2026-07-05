@@ -11,10 +11,12 @@ import com.example.tutorbridge.repo.UserRepoImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class UserViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repo: UserRepo = UserRepoImpl()
+class UserViewModel @JvmOverloads constructor(
+    application: Application,
+    private val repo: UserRepo = UserRepoImpl(),
     private val sessionRepo: SessionRepo = SessionRepoImpl(application)
+) : AndroidViewModel(application) {
+
     var message = mutableStateOf("")
 
     private val _isLoading = MutableStateFlow(false)
@@ -151,7 +153,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
 
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches()) {
+        if (!EMAIL_REGEX.matches(trimmedEmail)) {
             callback(false, "Enter a valid email", "")
             return
         }
@@ -203,5 +205,9 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
             _isLoading.value = false
             callback(success, msg)
         }
+    }
+
+    companion object {
+        private val EMAIL_REGEX = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
     }
 }
