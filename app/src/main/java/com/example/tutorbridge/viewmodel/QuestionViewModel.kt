@@ -2,16 +2,20 @@ package com.example.tutorbridge.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.tutorbridge.model.QuestionModel
+import com.example.tutorbridge.repo.NotificationRepo
 import com.example.tutorbridge.repo.NotificationRepoImpl
 import com.example.tutorbridge.repo.QuestionRepo
 import com.example.tutorbridge.repo.QuestionRepoImpl
+import com.example.tutorbridge.repo.UserRepo
 import com.example.tutorbridge.repo.UserRepoImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class QuestionViewModel : ViewModel() {
-
-    private val repo: QuestionRepo = QuestionRepoImpl()
+class QuestionViewModel @JvmOverloads constructor(
+    private val repo: QuestionRepo = QuestionRepoImpl(),
+    private val userRepo: UserRepo = UserRepoImpl(),
+    private val notificationRepo: NotificationRepo = NotificationRepoImpl()
+) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -50,7 +54,7 @@ class QuestionViewModel : ViewModel() {
 
         _isLoading.value = true
 
-        UserRepoImpl().getCurrentUser { _, userData ->
+        userRepo.getCurrentUser { _, userData ->
             val model = QuestionModel(
                 title = title.trim(),
                 subject = subject.trim(),
@@ -61,7 +65,7 @@ class QuestionViewModel : ViewModel() {
             repo.postQuestion(model) { success, msg ->
                 _isLoading.value = false
                 if (success) {
-                    NotificationRepoImpl().sendNotificationToTutors(
+                    notificationRepo.sendNotificationToTutors(
                         "New Question",
                         "${model.askedBy.ifBlank { "A student" }} asked: ${model.title}"
                     ) { _, _ -> }

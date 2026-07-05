@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -191,7 +192,9 @@ fun ChangePassBody() {
                         value = oldPassword,
                         onValueChange = { oldPassword = it },
                         placeholder = { Text("Enter old password", color = Color.Gray) },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("oldPassword"),
                         singleLine = true,
                         visualTransformation = PasswordVisualTransformation(),
                         shape = RoundedCornerShape(14.dp),
@@ -214,7 +217,9 @@ fun ChangePassBody() {
                         value = newPassword,
                         onValueChange = { newPassword = it },
                         placeholder = { Text("Enter new password", color = Color.Gray) },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("newPassword"),
                         singleLine = true,
                         visualTransformation = PasswordVisualTransformation(),
                         shape = RoundedCornerShape(14.dp),
@@ -237,7 +242,9 @@ fun ChangePassBody() {
                         value = confirmPassword,
                         onValueChange = { confirmPassword = it },
                         placeholder = { Text("Confirm your password", color = Color.Gray) },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("confirmNewPassword"),
                         singleLine = true,
                         visualTransformation = PasswordVisualTransformation(),
                         shape = RoundedCornerShape(14.dp),
@@ -266,7 +273,8 @@ fun ChangePassBody() {
                     enabled = !isLoading,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
+                        .height(56.dp)
+                        .testTag("updatePassword"),
                     shape = RoundedCornerShape(50.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                     contentPadding = PaddingValues()

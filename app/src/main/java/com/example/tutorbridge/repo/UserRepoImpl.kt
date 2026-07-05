@@ -4,15 +4,14 @@ import com.example.tutorbridge.model.UserModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class UserRepoImpl : UserRepo {
-
-    private val auth = FirebaseAuth.getInstance()
-
-    private val database = FirebaseDatabase.getInstance()
-    private val ref = database.getReference("users")
+class UserRepoImpl(
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
+    private val ref: DatabaseReference = FirebaseDatabase.getInstance().getReference("users")
+) : UserRepo {
 
     override fun register(
         email: String,

@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -161,7 +162,9 @@ fun AskQuestionScreen() {
                         placeholder = { Text("What's your question?", color = Color.Gray) },
                         singleLine = true,
                         shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("questionTitle"),
                         colors = fieldColors
                     )
 
@@ -175,7 +178,9 @@ fun AskQuestionScreen() {
                         placeholder = { Text("Subject", color = Color.Gray) },
                         singleLine = true,
                         shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("questionSubject"),
                         colors = fieldColors
                     )
 
@@ -190,7 +195,9 @@ fun AskQuestionScreen() {
                         minLines = 4,
                         maxLines = 6,
                         shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("questionDetails"),
                         colors = fieldColors
                     )
 
@@ -208,7 +215,8 @@ fun AskQuestionScreen() {
                         enabled = !isLoading,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp),
+                            .height(56.dp)
+                            .testTag("postQuestion"),
                         shape = RoundedCornerShape(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                         contentPadding = PaddingValues()
