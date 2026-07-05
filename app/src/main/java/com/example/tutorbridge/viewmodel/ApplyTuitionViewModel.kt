@@ -5,6 +5,7 @@ import com.example.tutorbridge.model.ApplyTuitionModel
 import com.example.tutorbridge.model.CreateRequestModel
 import com.example.tutorbridge.repo.ApplyTuitionRepo
 import com.example.tutorbridge.repo.ApplyTuitionRepoImpl
+import com.example.tutorbridge.repo.NotificationRepoImpl
 import com.example.tutorbridge.repo.UserRepoImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -50,6 +51,11 @@ class ApplyTuitionViewModel : ViewModel() {
                 _requestApplications.value = _requestApplications.value.map {
                     if (it.applicationId == application.applicationId) it.copy(status = "accepted") else it
                 }
+                NotificationRepoImpl().sendNotification(
+                    application.tutorId,
+                    "Application Accepted",
+                    "Your application for ${application.subject} has been accepted"
+                ) { _, _ -> }
             }
             callback(success, msg)
         }
@@ -102,6 +108,13 @@ class ApplyTuitionViewModel : ViewModel() {
             )
             repo.applyForRequest(model) { success, msg ->
                 _isLoading.value = false
+                if (success) {
+                    NotificationRepoImpl().sendNotification(
+                        request.userId,
+                        "New Application",
+                        "${model.tutorName.ifBlank { "A tutor" }} applied to your request for ${request.subject}"
+                    ) { _, _ -> }
+                }
                 callback(success, msg)
             }
         }

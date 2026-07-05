@@ -78,13 +78,15 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         role: String,
         callback: (Boolean, String) -> Unit
     ) {
+        val trimmedEmail = email.trim()
+
         // Validation
         if (fullName.isBlank()) {
             callback(false, "Full name is required")
             return
         }
 
-        if (email.isBlank()) {
+        if (trimmedEmail.isBlank()) {
             callback(false, "Email is required")
             return
         }
@@ -111,7 +113,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
         _isLoading.value = true
 
-        repo.register(email, password) { success, message, uid ->
+        repo.register(trimmedEmail, password) { success, message, uid ->
 
             if (!success) {
                 callback(false, message)
@@ -121,7 +123,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
             val user = UserModel(
                 uid = uid,
                 fullName = fullName,
-                email = email,
+                email = trimmedEmail,
                 role = role
             )
 
@@ -142,12 +144,14 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         password: String,
         callback: (Boolean, String, String) -> Unit
     ){
-        if (email.isBlank()) {
+        val trimmedEmail = email.trim()
+
+        if (trimmedEmail.isBlank()) {
             callback(false, "Email is required", "")
             return
         }
 
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches()) {
             callback(false, "Enter a valid email", "")
             return
         }
@@ -159,7 +163,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
         _isLoading.value = true
 
-        repo.login(email.trim(), password.trim()) { success, message ->
+        repo.login(trimmedEmail, password) { success, message ->
             if (success) {
                 repo.getCurrentUser { _, user ->
                     _isLoading.value = false

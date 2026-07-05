@@ -19,12 +19,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -200,15 +202,30 @@ fun TutorScreen(
                 modifier = Modifier.size(80.dp).clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
-            Box(
-                modifier = Modifier
-                    .size(42.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFEAF2FF))
-                    .clickable { context.startActivity(Intent(context, ProfileUpdate::class.java)) },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color(0xFF0066FF), modifier = Modifier.size(22.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFEAF2FF))
+                        .clickable { context.startActivity(Intent(context, NotificationActivity::class.java)) },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.Notifications, contentDescription = "Notifications", tint = Color(0xFF0066FF), modifier = Modifier.size(22.dp))
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFEAF2FF))
+                        .clickable { context.startActivity(Intent(context, ProfileUpdate::class.java)) },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color(0xFF0066FF), modifier = Modifier.size(22.dp))
+                }
             }
         }
 

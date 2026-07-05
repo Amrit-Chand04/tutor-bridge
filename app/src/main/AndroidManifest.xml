@@ -94,6 +94,11 @@
             android:label="@string/title_activity_login"
             android:theme="@style/Theme.TutorBridge" />
 
+        <activity
+            android:name=".view.NotificationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_notification"
+            android:theme="@style/Theme.TutorBridge" />
 
     </application>
 

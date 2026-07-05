@@ -311,7 +311,7 @@ fun SignUp() {
                     onClick = {
                         userViewModel.register(
                             fullName = fullName,
-                            email = email.trim(),
+                            email = email,
                             password = password,
                             confirmPassword = confirmPassword,
                             role = selectedRole

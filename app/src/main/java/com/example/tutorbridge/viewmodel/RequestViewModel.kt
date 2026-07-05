@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.example.tutorbridge.model.CreateRequestModel
 import com.example.tutorbridge.repo.CreateRequestRepo
 import com.example.tutorbridge.repo.CreateRequestRepoImpl
+import com.example.tutorbridge.repo.NotificationRepoImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -50,6 +51,12 @@ class RequestViewModel : ViewModel() {
 
         repo.addRequest(model) { success, msg ->
             _isLoading.value = false
+            if (success) {
+                NotificationRepoImpl().sendNotificationToTutors(
+                    "New Tuition Request",
+                    "A new request for ${model.subject} has been posted"
+                ) { _, _ -> }
+            }
             callback(success, msg)
         }
     }
