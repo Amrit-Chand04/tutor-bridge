@@ -23,21 +23,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,6 +80,7 @@ fun ForgetPasswordUi() {
     val context = LocalContext.current
     val activity = context as? Activity
     val userViewModel: UserViewModel = viewModel()
+    val isLoading by userViewModel.isLoading.collectAsState()
     val scrollState = rememberScrollState()
 
     Scaffold(
@@ -94,8 +97,15 @@ fun ForgetPasswordUi() {
             ),
         containerColor = Color.Transparent,
         topBar = {
-            TopAppBar(
-                title = {},
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Forgot Password",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1A1A2E)
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { activity?.finish() }) {
                         Icon(
@@ -105,7 +115,7 @@ fun ForgetPasswordUi() {
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = Color.Transparent
                 )
             )
@@ -120,6 +130,8 @@ fun ForgetPasswordUi() {
                 .verticalScroll(scrollState)
                 .imePadding()
         ) {
+
+            Spacer(modifier = Modifier.height(76.dp))
 
             // Logo
             Row(
@@ -172,7 +184,7 @@ fun ForgetPasswordUi() {
                     onValueChange = { email = it },
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Enter your email") },
+                    placeholder = { Text("Enter your email", color = Color.Gray) },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
                         unfocusedIndicatorColor = Color.Transparent,
@@ -190,11 +202,15 @@ fun ForgetPasswordUi() {
                         if (email.isBlank()) {
                             Toast.makeText(context, "Please enter your email", Toast.LENGTH_SHORT).show()
                         } else {
-                            userViewModel.forgotPassword(email.trim()) { _, message ->
+                            userViewModel.forgotPassword(email.trim()) { success, message ->
                                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                                if (success) {
+                                    activity?.finish()
+                                }
                             }
                         }
                     },
+                    enabled = !isLoading,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -213,60 +229,42 @@ fun ForgetPasswordUi() {
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "Send Reset Email",
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                color = Color.White,
+                                strokeWidth = 2.dp,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        } else {
+                            Text(
+                                text = "Send Reset Email",
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                // OR divider
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    HorizontalDivider(modifier = Modifier.weight(1f), color = Color.LightGray)
-                    Text(text = "  OR  ", color = Color.Gray, fontSize = 14.sp)
-                    HorizontalDivider(modifier = Modifier.weight(1f), color = Color.LightGray)
+                    Text(
+                        text = "Remember your password? ",
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
+                    Text(
+                        text = "Login",
+                        fontSize = 14.sp,
+                        color = Color(0xFF0066FF),
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable { activity?.finish() }
+                    )
                 }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Back to Sign In button
-                Button(
-                    onClick = { activity?.finish() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                    contentPadding = PaddingValues()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                brush = Brush.horizontalGradient(
-                                    colors = listOf(Color(0xFF0066FF), Color(0xFF24C16B))
-                                ),
-                                shape = RoundedCornerShape(18.dp)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Back to Sign In",
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
             }
 
             Spacer(modifier = Modifier.height(24.dp))

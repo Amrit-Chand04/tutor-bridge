@@ -318,13 +318,7 @@ fun SignUp() {
                         ) { success, message ->
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                             if (success) {
-                                fullName = ""
-                                email = ""
-                                password = ""
-                                confirmPassword = ""
-                                passwordVisible = false
-                                confirmPasswordVisible = false
-                                selectedRole = ""
+                                activity?.finish()
                             }
                         }
                     },

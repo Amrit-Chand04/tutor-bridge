@@ -282,14 +282,7 @@ fun CreateRequestScreen() {
                             ) { success, msg ->
                                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                                 if (success) {
-                                    subject = ""
-                                    grade = ""
-                                    preferredGender = "Any"
-                                    location = ""
-                                    budget = ""
-                                    preferredTime = ""
-                                    description = ""
-                                    contactNumber = ""
+                                    activity?.finish()
                                 }
                             }
                         },

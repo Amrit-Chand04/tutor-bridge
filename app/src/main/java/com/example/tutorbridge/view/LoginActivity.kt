@@ -44,7 +44,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -54,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tutorbridge.R
-import com.example.tutorbridge.repo.UserRepoImpl
 import com.example.tutorbridge.view.ui.theme.TutorBridgeTheme
 import com.example.tutorbridge.viewmodel.UserViewModel
 
@@ -97,213 +95,204 @@ fun Login() {
             )
             .verticalScroll(scrollState)
             .imePadding()
+            .padding(horizontal = 16.dp)
     ) {
+        Spacer(modifier = Modifier.height(150.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(R.drawable.tutor_bridge_final),
+                contentDescription = "TutorBridge Logo",
+                modifier = Modifier.size(120.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(15.dp)
-        ) {
-            Spacer(modifier = Modifier.height(70.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.tutor_bridge_final),
-                    contentDescription = "TutorBridge Logo",
-                    modifier = Modifier.size(180.dp)
+                .fillMaxWidth()
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(24.dp)
                 )
+                .padding(20.dp)
+        ) {
+            Text(
+                text = "Welcome Back!",
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF1A1A2E),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "Login to continue to your account",
+                fontSize = 14.sp,
+                color = Color.Gray,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(28.dp))
+
+            Text(
+                text = "Email Address",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF1A1A2E)
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Enter your email", color = Color.Gray) },
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    unfocusedIndicatorColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Gray.copy(alpha = 0.08f),
+                    focusedContainerColor = Color.Gray.copy(alpha = 0.08f),
+                    focusedIndicatorColor = Color(0xFF0066FF)
+                )
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Text(
+                text = "Password",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF1A1A2E)
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Enter your password", color = Color.Gray) },
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    unfocusedIndicatorColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Gray.copy(alpha = 0.08f),
+                    focusedContainerColor = Color.Gray.copy(alpha = 0.08f),
+                    focusedIndicatorColor = Color(0xFF0066FF)
+                ),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            painter = if (passwordVisible) painterResource(R.drawable.outline_visibility_24)
+                            else painterResource(R.drawable.outline_visibility_off_24),
+                            contentDescription = "Toggle password visibility",
+                            tint = Color(0xFF0066FF)
+                        )
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = "Forgot Password?",
+                fontSize = 13.sp,
+                color = Color(0xFF0066FF),
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        context.startActivity(Intent(context, ForgetPasswordActivity::class.java))
+                    }
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    userViewModel.login(email, password) { success, message, role ->
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
+                        if (success && role == "Student") {
+                            context.startActivity(Intent(context, StudentDashboard::class.java))
+                        }
+
+                        if (success && role == "Teacher") {
+                            context.startActivity(Intent(context, TutorDashboard::class.java))
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(18.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                contentPadding = PaddingValues()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(Color(0xFF0066FF), Color(0xFF24C16B))
+                            ),
+                            shape = RoundedCornerShape(18.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    } else {
+                        Text(
+                            text = "Login",
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(25.dp)
-                    )
-                    .padding(20.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Welcome Back!",
-                    style = TextStyle(
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    ),
-                    modifier = Modifier.fillMaxWidth()
+                    text = "Don't have an account? ",
+                    fontSize = 14.sp,
+                    color = Color.Gray
                 )
-
-                Spacer(modifier = Modifier.height(14.dp))
-
                 Text(
-                    text = "Login to continue to your account",
-                    fontSize = 18.sp,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(30.dp))
-
-                Text(
-                    text = "Email Address",
-                    fontWeight = FontWeight.SemiBold
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Enter your email") },
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        unfocusedIndicatorColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        focusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        focusedIndicatorColor = Color.Blue,
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(15.dp))
-
-                Text(
-                    text = "Password",
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Enter your password") },
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        unfocusedIndicatorColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        focusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        focusedIndicatorColor = Color.Blue,
-                    ),
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(
-                                painter = if (passwordVisible) painterResource(R.drawable.outline_visibility_24)
-                                else painterResource(R.drawable.outline_visibility_off_24),
-                                contentDescription = "Toggle password visibility",
-                                tint = Color(0xFF2E7D32)
-                            )
-                        }
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = "Forgot Password",
+                    text = "Sign Up",
+                    fontSize = 14.sp,
                     color = Color(0xFF0066FF),
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.fillMaxWidth()
-                        .clickable{
-                            val intent = Intent(context, ForgetPasswordActivity::class.java)
-                            context.startActivity(intent)
-                        }
-                )
-
-                Spacer(modifier = Modifier.height(30.dp))
-
-                Button(
-                    onClick = {
-
-                        // check Logcat
-                        println("checking login button is clicked or not ")
-
-
-
-                        userViewModel.login(
-                            email,
-                            password
-                        ) { success, message, role ->
-
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-
-                            if (success && role == "Student") {
-                                val intent = Intent(context, StudentDashboard::class.java)
-                                context.startActivity(intent)
-                            }
-
-                            if (success && role == "Teacher") {
-                                val intent = Intent(context, TutorDashboard::class.java)
-                                context.startActivity(intent)
-                            }
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent
-                    ),
-                    contentPadding = PaddingValues()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                brush = Brush.horizontalGradient(
-                                    colors = listOf(
-                                        Color(0xFF0066FF),
-                                        Color(0xFF16D64D)
-                                    )
-                                )
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (isLoading) {
-                            CircularProgressIndicator(
-                                color = Color.White,
-                                strokeWidth = 2.dp,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        } else {
-                            Text(
-                                text = "Login",
-                                color = Color.White,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable {
+                        context.startActivity(Intent(context, SignUpActivity::class.java))
                     }
-                }
-
-                Spacer(modifier = Modifier.height(25.dp))
-
-                // SIGN UP ROW
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text("Don't have an account? ")
-                    Text(
-                        text = "Sign Up",
-                        color = Color(0xFF0066FF),
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.clickable {
-                            val intent = Intent(context, SignUpActivity::class.java)
-                            context.startActivity(intent)
-                        }
-                    )
-                }
+                )
             }
         }
+
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }
 

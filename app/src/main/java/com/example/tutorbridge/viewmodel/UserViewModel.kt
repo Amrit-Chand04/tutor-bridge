@@ -182,7 +182,11 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         email: String,
         callback: (Boolean, String) -> Unit
     ){
-        repo.forgotPassword(email, callback)
+        _isLoading.value = true
+        repo.forgotPassword(email) { success, message ->
+            _isLoading.value = false
+            callback(success, message)
+        }
     }
 
     fun changePassword(

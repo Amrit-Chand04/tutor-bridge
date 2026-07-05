@@ -2,7 +2,10 @@ package com.example.tutorbridge.repo
 
 import com.example.tutorbridge.model.UserModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class UserRepoImpl : UserRepo {
 
@@ -83,13 +86,30 @@ class UserRepoImpl : UserRepo {
         email: String,
         callback: (Boolean, String) -> Unit
     ) {
-        auth.sendPasswordResetEmail(email)
-            .addOnSuccessListener {
-                callback(true, "Reset email sent")
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val isRegistered = snapshot.children.any {
+                    it.getValue(UserModel::class.java)?.email.equals(email, ignoreCase = true)
+                }
+
+                if (!isRegistered) {
+                    callback(false, "No account found with this email")
+                    return
+                }
+
+                auth.sendPasswordResetEmail(email)
+                    .addOnSuccessListener {
+                        callback(true, "Reset email sent")
+                    }
+                    .addOnFailureListener {
+                        callback(false, it.message ?: "Failed to send reset email")
+                    }
             }
-            .addOnFailureListener {
-                callback(false, "Failed to send reset email")
+
+            override fun onCancelled(error: DatabaseError) {
+                callback(false, "Failed to verify email")
             }
+        })
     }
 
     override fun changePassword(
