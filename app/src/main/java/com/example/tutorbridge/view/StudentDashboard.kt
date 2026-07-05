@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.QuestionAnswer
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -245,7 +246,7 @@ fun HomeScreen(viewModel: UserViewModel = viewModel()) {
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF1A1A2E)
                     )
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
                         text = user?.fullName ?: "",
@@ -283,6 +284,26 @@ fun HomeScreen(viewModel: UserViewModel = viewModel()) {
                 onClick = { context.startActivity(Intent(context, CreateRequestActivity::class.java)) }
             )
         }
+
+        item {
+            ActionCard(
+                icon = Icons.Default.QuestionAnswer,
+                iconGradient = Brush.horizontalGradient(
+                    colors = listOf(
+                        Color(0xFF0066FF),
+                        Color(0xFF24C16B)
+                    )
+                ),
+                title = "Ask a Question",
+                subtitle = "Post your study doubts and get answers from experienced tutors.",
+                onClick = {
+                    context.startActivity(
+                        Intent(context, AskQuestionActivity::class.java)
+                    )
+                }
+            )
+        }
+
     }
 }
 
