@@ -7,11 +7,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,13 +18,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,7 +34,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -45,12 +45,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,7 +63,9 @@ class ChangePassActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ChangePassBody()
+            TutorBridgeTheme {
+                ChangePassBody()
+            }
         }
     }
 }
@@ -80,7 +81,12 @@ fun ChangePassBody() {
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
 
-    val scrollState = rememberScrollState()
+    val fieldColors = TextFieldDefaults.colors(
+        focusedContainerColor = Color.White,
+        unfocusedContainerColor = Color.White,
+        focusedIndicatorColor = Color(0xFF0066FF),
+        unfocusedIndicatorColor = Color(0xFFE0E0E0)
+    )
 
     Scaffold(
         modifier = Modifier
@@ -96,8 +102,15 @@ fun ChangePassBody() {
             ),
         containerColor = Color.Transparent,
         topBar = {
-            TopAppBar(
-                title = { },
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Update Password",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1A1A2E)
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = {
                         var currentContext = context
@@ -110,157 +123,139 @@ fun ChangePassBody() {
                         }
                     }) {
                         Icon(
-                            painter = painterResource(id = R.drawable.outline_arrow_back_24),
+                            Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.Black
+                            tint = Color(0xFF1A1A2E)
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = Color.Transparent
                 )
             )
         }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 17.dp)
-                .verticalScroll(scrollState)
-                .imePadding()
+                .padding(horizontal = 24.dp)
+                .imePadding(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = PaddingValues(bottom = 24.dp)
         ) {
-            Spacer(modifier = Modifier.height(46.dp))
+            item {
+                Spacer(modifier = Modifier.height(38.dp))
 
-            // App Logo
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.tutor_bridge_final),
-                    contentDescription = "App Logo",
-                    modifier = Modifier.size(130.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            // Main Input Card Frame
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(20.dp)
+                Box(
+                    modifier = Modifier
+                        .size(90.dp)
+                        .border(
+                            width = 3.dp,
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    Color(0xFFDCEBFF),
+                                    Color(0xFFBFD9FF),
+                                    Color(0xFFC8F2CF)
+                                )
+                            ),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.tutor_bridge_final),
+                        contentDescription = "App Logo",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.size(64.dp)
                     )
-                    .padding(13.dp)
-            ) {
-                Spacer(modifier = Modifier.height(6.dp))
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "Change Password",
-                    style = TextStyle(
-                        fontSize = 24.sp,
+                    text = "Keep your account secure",
+                    fontSize = 13.sp,
+                    color = Color.Gray
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Old Password field
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Old Password",
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-
-                Spacer(modifier = Modifier.height(23.dp))
-
-                // Old Password Text
-                Text(
-                    text = "Old Password",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF1A1A2E)
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                OutlinedTextField(
-                    value = oldPassword,
-                    onValueChange = { oldPassword = it },
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Enter old password", color = Color.Gray) },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    colors = TextFieldDefaults.colors(
-                        unfocusedIndicatorColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        focusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        focusedIndicatorColor = Color(0xFF0066FF),
+                        color = Color(0xFF1A1A2E)
                     )
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // New Password Text
-                Text(
-                    text = "New Password",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF1A1A2E)
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                OutlinedTextField(
-                    value = newPassword,
-                    onValueChange = { newPassword = it },
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Enter new password", color = Color.Gray) },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    colors = TextFieldDefaults.colors(
-                        unfocusedIndicatorColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        focusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        focusedIndicatorColor = Color(0xFF0066FF),
+                    Spacer(modifier = Modifier.height(6.dp))
+                    OutlinedTextField(
+                        value = oldPassword,
+                        onValueChange = { oldPassword = it },
+                        placeholder = { Text("Enter old password", color = Color.Gray) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = fieldColors
                     )
-                )
+                }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // Confirm Password Text
-                Text(
-                    text = "Confirm Password",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF1A1A2E)
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                OutlinedTextField(
-                    value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Confirm your password", color = Color.Gray) },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    colors = TextFieldDefaults.colors(
-                        unfocusedIndicatorColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        focusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        focusedIndicatorColor = Color(0xFF0066FF),
+                // New Password field
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "New Password",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF1A1A2E)
                     )
-                )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    OutlinedTextField(
+                        value = newPassword,
+                        onValueChange = { newPassword = it },
+                        placeholder = { Text("Enter new password", color = Color.Gray) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = fieldColors
+                    )
+                }
 
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                ElevatedButton(
+                // Confirm Password field
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Confirm Password",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF1A1A2E)
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    OutlinedTextField(
+                        value = confirmPassword,
+                        onValueChange = { confirmPassword = it },
+                        placeholder = { Text("Confirm your password", color = Color.Gray) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = fieldColors
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Update button with gradient
+                Button(
                     onClick = {
                         if (oldPassword.isBlank() || newPassword.isBlank() || confirmPassword.isBlank()) {
                             Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
-                            return@ElevatedButton
+                            return@Button
                         }
                         viewModel.changePassword(oldPassword, newPassword, confirmPassword) { success, msg ->
                             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
@@ -272,10 +267,11 @@ fun ChangePassBody() {
                         }
                     },
                     enabled = !isLoading,
-                    modifier = Modifier.fillMaxWidth().height(60.dp),
-                    shape = RoundedCornerShape(18.dp),
-                    elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 8.dp),
-                    colors = ButtonDefaults.elevatedButtonColors(containerColor = Color.Transparent),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                     contentPadding = PaddingValues()
                 ) {
                     Box(
@@ -283,27 +279,37 @@ fun ChangePassBody() {
                             .fillMaxSize()
                             .background(
                                 brush = Brush.horizontalGradient(
-                                    colors = listOf(Color(0xFF0066FF), Color(0xFF16D64D))
-                                )
+                                    colors = listOf(Color(0xFF0066FF), Color(0xFF24C16B))
+                                ),
+                                shape = RoundedCornerShape(50.dp)
                             ),
                         contentAlignment = Alignment.Center
                     ) {
                         if (isLoading) {
-                            CircularProgressIndicator(color = Color.White, strokeWidth = 2.dp, modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(
+                                color = Color.White,
+                                strokeWidth = 2.dp,
+                                modifier = Modifier.size(24.dp)
+                            )
                         } else {
-                            Text(text = "Change Password", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                            Text(
+                                text = "Update Password",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
                         }
                     }
                 }
-
-                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ChangePassPreview() {
-    ChangePassBody()
+    TutorBridgeTheme {
+        ChangePassBody()
+    }
 }
