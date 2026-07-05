@@ -15,6 +15,17 @@ class QuestionViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _questions = MutableStateFlow<List<QuestionModel>>(emptyList())
+    val questions: StateFlow<List<QuestionModel>> = _questions
+
+    fun loadAllQuestions() {
+        _isLoading.value = true
+        repo.getAllQuestions { _, list ->
+            _isLoading.value = false
+            _questions.value = list.sortedByDescending { it.timestamp }
+        }
+    }
+
     fun postQuestion(
         title: String,
         subject: String,

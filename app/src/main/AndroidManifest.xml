@@ -106,6 +106,12 @@
             android:label="@string/title_activity_ask_question"
             android:theme="@style/Theme.TutorBridge" />
 
+        <activity
+            android:name=".view.StudentQuestionsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_student_questions"
+            android:theme="@style/Theme.TutorBridge" />
+
     </application>
 
 </manifest>

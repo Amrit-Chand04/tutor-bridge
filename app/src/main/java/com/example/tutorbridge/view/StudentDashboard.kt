@@ -3,6 +3,7 @@ package com.example.tutorbridge.view
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
@@ -84,6 +85,10 @@ fun StudentDashboardScreen() {
 
     val context = LocalContext.current
     var selectedIndex by remember { mutableStateOf(0) }
+
+    BackHandler(enabled = selectedIndex != 0) {
+        selectedIndex = 0
+    }
 
     Scaffold(
         modifier = Modifier

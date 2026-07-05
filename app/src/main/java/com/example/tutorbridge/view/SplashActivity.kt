@@ -74,7 +74,7 @@ fun SplashBody(userViewModel: UserViewModel = viewModel()) {
         Image(
             painter = painterResource(R.drawable.tutor_bridge_final),
             contentDescription = "App Logo",
-            modifier = Modifier.size(280.dp)
+            modifier = Modifier.size(250.dp)
         )
 
         CircularProgressIndicator(

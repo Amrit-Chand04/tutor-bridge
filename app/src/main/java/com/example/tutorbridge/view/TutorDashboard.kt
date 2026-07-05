@@ -3,6 +3,7 @@ package com.example.tutorbridge.view
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.QuestionAnswer
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -94,6 +96,10 @@ fun TutorDashboardScreen() {
 
     var selectedIndex by remember { mutableStateOf(0) }
 
+    BackHandler(enabled = selectedIndex != 0) {
+        selectedIndex = 0
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -118,7 +124,8 @@ fun TutorDashboardScreen() {
             ) {
                 val items = listOf(
                     "Home" to Icons.Default.Home,
-                    "My Applications" to Icons.AutoMirrored.Filled.List,
+                    "Applications" to Icons.AutoMirrored.Filled.List,
+                    "Questions" to Icons.Default.QuestionAnswer,
                     "Settings" to Icons.Default.Settings
                 )
                 items.forEachIndexed { index, item ->
@@ -154,7 +161,8 @@ fun TutorDashboardScreen() {
             when (selectedIndex) {
                 0 -> TutorScreen()
                 1 -> MyApplicationsScreen()
-                2 -> SettingsScreen()
+                2 -> StudentQuestionsScreen()
+                3 -> SettingsScreen()
             }
         }
     }
