@@ -1,4 +1,20 @@
 <resources>
-    <string name="app_name">TutorBridge</string>
+    <string name="app_name">Tutor Bridge</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_sign_up">SignUpActivity</string>
+    <string name="title_activity_forget_password">ForgetPasswordActivity</string>
+    <string name="title_activity_change_pass">ChangePassActivity</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_student_dashboard">StudentDashboard</string>
+    <string name="title_activity_setting">SettingActivity</string>
+    <string name="title_activity_profile_update">ProfileUpdate</string>
+    <string name="title_activity_create_request">CreateRequestActivity</string>
+    <string name="title_activity_my_request">MyRequest</string>
+    <string name="title_activity_tutor_dashboard">TutorDashboard</string>
+    <string name="title_activity_my_applications">MyApplications</string>
+    <string name="title_activity_view_applications">ViewApplications</string>
+    <string name="title_activity_notification">NotificationActivity</string>
+    <string name="title_activity_ask_question">AskQuestionActivity</string>
+    <string name="title_activity_student_questions">StudentQuestionsActivity</string>
+    <string name="title_activity_my_doubts">MyDoubtsActivity</string>
 </resources>
