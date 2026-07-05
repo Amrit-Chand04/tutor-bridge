@@ -5,4 +5,5 @@ import com.example.tutorbridge.model.QuestionModel
 interface QuestionRepo {
     fun postQuestion(model: QuestionModel, callback: (Boolean, String) -> Unit)
     fun getAllQuestions(callback: (Boolean, List<QuestionModel>) -> Unit)
+    fun getMyQuestions(callback: (Boolean, List<QuestionModel>) -> Unit)
 }

@@ -42,4 +42,24 @@ class QuestionRepoImpl : QuestionRepo {
             }
         })
     }
+
+    override fun getMyQuestions(callback: (Boolean, List<QuestionModel>) -> Unit) {
+        val uid = auth.currentUser?.uid ?: run {
+            callback(false, emptyList())
+            return
+        }
+
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val list = snapshot.children
+                    .mapNotNull { it.getValue(QuestionModel::class.java) }
+                    .filter { it.userId == uid }
+                callback(true, list)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback(false, emptyList())
+            }
+        })
+    }
 }

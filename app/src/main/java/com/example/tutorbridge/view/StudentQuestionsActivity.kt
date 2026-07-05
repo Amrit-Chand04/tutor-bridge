@@ -382,7 +382,7 @@ fun StudentQuestionCard(question: QuestionModel) {
                                     }
                                 }
                             } else {
-                                answerViewModel.postAnswer(question.questionId, answerText) { success, msg ->
+                                answerViewModel.postAnswer(question, answerText) { success, msg ->
                                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                                     if (success) answerText = ""
                                 }

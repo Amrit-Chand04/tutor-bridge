@@ -115,6 +115,7 @@ fun StudentDashboardScreen() {
                 val items = listOf(
                     "Home" to Icons.Default.Home,
                     "My Requests" to Icons.AutoMirrored.Filled.List,
+                    "My Doubts" to Icons.Default.QuestionAnswer,
                     "Settings" to Icons.Default.Settings
                 )
                 items.forEachIndexed { index, item ->
@@ -150,7 +151,8 @@ fun StudentDashboardScreen() {
             when (selectedIndex) {
                 0 -> HomeScreen()
                 1 -> MyRequestScreen()
-                2 -> SettingsScreen()
+                2 -> MyDoubtsScreen()
+                3 -> SettingsScreen()
             }
         }
     }

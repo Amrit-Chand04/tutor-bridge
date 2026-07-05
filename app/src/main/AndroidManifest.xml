@@ -112,6 +112,12 @@
             android:label="@string/title_activity_student_questions"
             android:theme="@style/Theme.TutorBridge" />
 
+        <activity
+            android:name=".view.MyDoubtsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_my_doubts"
+            android:theme="@style/Theme.TutorBridge" />
+
     </application>
 
 </manifest>

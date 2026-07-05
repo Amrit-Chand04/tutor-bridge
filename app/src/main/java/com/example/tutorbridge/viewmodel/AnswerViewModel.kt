@@ -2,8 +2,10 @@ package com.example.tutorbridge.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.tutorbridge.model.AnswerModel
+import com.example.tutorbridge.model.QuestionModel
 import com.example.tutorbridge.repo.AnswerRepo
 import com.example.tutorbridge.repo.AnswerRepoImpl
+import com.example.tutorbridge.repo.NotificationRepoImpl
 import com.example.tutorbridge.repo.UserRepoImpl
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,21 +34,28 @@ class AnswerViewModel : ViewModel() {
         }
     }
 
-    fun postAnswer(questionId: String, answerText: String, callback: (Boolean, String) -> Unit) {
+    fun postAnswer(question: QuestionModel, answerText: String, callback: (Boolean, String) -> Unit) {
         if (answerText.isBlank()) { callback(false, "Answer cannot be empty"); return }
 
         _isSubmitting.value = true
 
         UserRepoImpl().getCurrentUser { _, userData ->
             val model = AnswerModel(
-                questionId = questionId,
+                questionId = question.questionId,
                 answerText = answerText.trim(),
                 tutorName = userData?.fullName ?: "",
                 timestamp = System.currentTimeMillis()
             )
             repo.postAnswer(model) { success, msg ->
                 _isSubmitting.value = false
-                if (success) loadAnswers(questionId)
+                if (success) {
+                    loadAnswers(question.questionId)
+                    NotificationRepoImpl().sendNotification(
+                        question.userId,
+                        "Your Question was Answered",
+                        "${model.tutorName.ifBlank { "A tutor" }} answered: ${question.title}"
+                    ) { _, _ -> }
+                }
                 callback(success, msg)
             }
         }

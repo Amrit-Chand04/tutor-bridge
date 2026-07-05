@@ -2,6 +2,7 @@ package com.example.tutorbridge.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.tutorbridge.model.QuestionModel
+import com.example.tutorbridge.repo.NotificationRepoImpl
 import com.example.tutorbridge.repo.QuestionRepo
 import com.example.tutorbridge.repo.QuestionRepoImpl
 import com.example.tutorbridge.repo.UserRepoImpl
@@ -18,11 +19,22 @@ class QuestionViewModel : ViewModel() {
     private val _questions = MutableStateFlow<List<QuestionModel>>(emptyList())
     val questions: StateFlow<List<QuestionModel>> = _questions
 
+    private val _myQuestions = MutableStateFlow<List<QuestionModel>>(emptyList())
+    val myQuestions: StateFlow<List<QuestionModel>> = _myQuestions
+
     fun loadAllQuestions() {
         _isLoading.value = true
         repo.getAllQuestions { _, list ->
             _isLoading.value = false
             _questions.value = list.sortedByDescending { it.timestamp }
+        }
+    }
+
+    fun loadMyQuestions() {
+        _isLoading.value = true
+        repo.getMyQuestions { _, list ->
+            _isLoading.value = false
+            _myQuestions.value = list.sortedByDescending { it.timestamp }
         }
     }
 
@@ -48,6 +60,12 @@ class QuestionViewModel : ViewModel() {
             )
             repo.postQuestion(model) { success, msg ->
                 _isLoading.value = false
+                if (success) {
+                    NotificationRepoImpl().sendNotificationToTutors(
+                        "New Question",
+                        "${model.askedBy.ifBlank { "A student" }} asked: ${model.title}"
+                    ) { _, _ -> }
+                }
                 callback(success, msg)
             }
         }
