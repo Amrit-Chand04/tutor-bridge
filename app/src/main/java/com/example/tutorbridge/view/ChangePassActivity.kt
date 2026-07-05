@@ -130,7 +130,7 @@ fun ChangePassBody() {
                 .verticalScroll(scrollState)
                 .imePadding()
         ) {
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(46.dp))
 
             // App Logo
             Row(
@@ -157,26 +157,27 @@ fun ChangePassBody() {
                     )
                     .padding(13.dp)
             ) {
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
                     text = "Change Password",
                     style = TextStyle(
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
 
 
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(23.dp))
 
                 // Old Password Text
                 Text(
                     text = "Old Password",
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp
+                    color = Color(0xFF1A1A2E)
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -186,7 +187,7 @@ fun ChangePassBody() {
                     onValueChange = { oldPassword = it },
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Enter old password") },
+                    placeholder = { Text("Enter old password", color = Color.Gray) },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     colors = TextFieldDefaults.colors(
@@ -202,8 +203,9 @@ fun ChangePassBody() {
                 // New Password Text
                 Text(
                     text = "New Password",
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp
+                    color = Color(0xFF1A1A2E)
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -213,7 +215,7 @@ fun ChangePassBody() {
                     onValueChange = { newPassword = it },
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Enter new password") },
+                    placeholder = { Text("Enter new password", color = Color.Gray) },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     colors = TextFieldDefaults.colors(
@@ -229,8 +231,9 @@ fun ChangePassBody() {
                 // Confirm Password Text
                 Text(
                     text = "Confirm Password",
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp
+                    color = Color(0xFF1A1A2E)
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -240,7 +243,7 @@ fun ChangePassBody() {
                     onValueChange = { confirmPassword = it },
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Confirm your password") },
+                    placeholder = { Text("Confirm your password", color = Color.Gray) },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     colors = TextFieldDefaults.colors(
